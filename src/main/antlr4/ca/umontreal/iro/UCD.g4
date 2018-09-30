@@ -1,34 +1,30 @@
 grammar UCD;
 
-model : 'MODEL' Identifier list_dec ;
+model : 'MODEL' ID declaration* ;
 
-list_dec : declaration* ;
+declaration : ( classDecl | association | aggregation | generalization ) ';' ;
 
-declaration : (class_dec | association | generalization | aggregation) ';' ;
+classDecl : 'CLASS' ID 'ATTRIBUTES' attributes? 'OPERATIONS' operations? ;
 
-class_dec : 'CLASS' Identifier class_content ;
+attributes : attribute=dataItem (',' attribute=dataItem)* ;
 
-class_content : 'ATTRIBUTES' attribute_list 'OPERATIONS' operation_list ;
+operations : operation (',' operation)* ;
 
-attribute_list : (data_item (',' data_item)*)? ;
+operation : ID '(' arguments? ')' ':' type ;
 
-data_item : Identifier ':' type ;
+arguments : argument=dataItem (',' argument=dataItem)* ;
 
-operation_list : (operation (',' operation)*)? ;
+dataItem : ID ':' type ;
 
-operation : Identifier arg_declaration ':' type ;
+type : ID ;
 
-arg_declaration : '(' arg_list ')' ;
+association : 'RELATION' ID 'ROLES' role ',' role ;
 
-arg_list : (data_item (',' data_item)*)? ;
+aggregation : 'AGGREGATION' 'CONTAINER' container=role 'PARTS' parts ;
 
-type : Identifier ;
+parts : part=role (',' part=role)* ;
 
-association : 'RELATION' Identifier 'ROLES' two_roles ;
-
-two_roles : role ',' role ;
-
-role : 'CLASS' Identifier multiplicity ;
+role : 'CLASS' ID multiplicity ;
 
 multiplicity
     : 'ONE'
@@ -38,24 +34,10 @@ multiplicity
     | 'UNDEFINED'
     ;
 
-aggregation : 'AGGREGATION' 'CONTAINER' role 'PARTS' roles ;
+generalization : 'GENERALIZATION' ID 'SUBCLASSES' subclasses ;
 
-roles : role (',' role)* ;
+subclasses : subclass=ID (',' subclass=ID)* ;
 
-generalization : 'GENERALIZATION' Identifier 'SUBCLASSES' sub_class_names ;
+ID : [a-zA-Z]+ ;
 
-sub_class_names : Identifier (',' Identifier)* ;
-
-Identifier : [a-zA-Z_]+ ;
-
-Whitespace
-    :   [ \t]+
-        -> skip
-    ;
-
-Newline
-    :   (   '\r' '\n'?
-        |   '\n'
-        )
-        -> skip
-    ;
+WS : [ \r\t\n]+ -> skip ;
