@@ -1,6 +1,7 @@
 package ca.umontreal.iro.ui;
 
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -8,8 +9,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
-public class MenuBar extends javafx.scene.control.MenuBar {
-    public MenuBar(Stage stage) {
+public class Bar extends MenuBar {
+    public Bar(Stage stage) {
         var fileMenu = new Menu("File");
 
         var fileChooser = new FileChooser();
