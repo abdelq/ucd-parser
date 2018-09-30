@@ -54,20 +54,13 @@ public class Parser {
     private static class ClassDeclVisitor extends UCDBaseVisitor<ClassDecl> {
         @Override
         public ClassDecl visitClassDecl(ClassDeclContext ctx) {
+            var visitor = new OperationVisitor();
             return new ClassDecl(
                 ctx.ID().getText(),
-                ctx.attributes().dataItem().stream().map(attr ->
+                ctx.dataItem().stream().map(attr ->
                     new Attribute(attr.ID().getText(), attr.type().getText())
                 ),
-                ctx.operations().operation().stream().map(op ->
-                    new Operation(
-                        op.ID().getText(),
-                        op.arguments().dataItem().stream().map(arg ->
-                            new Argument(arg.ID().getText(), arg.type().getText())
-                        ),
-                        op.type().getText()
-                    )
-                )
+                ctx.operation().stream().map(visitor::visitOperation)
             );
         }
     }
@@ -102,6 +95,19 @@ public class Parser {
             return new Generalization(
                 ctx.ID().getText(),
                 ctx.subclasses().ID().stream().map(ParseTree::getText)
+            );
+        }
+    }
+
+    private static class OperationVisitor extends UCDBaseVisitor<Operation> {
+        @Override
+        public Operation visitOperation(OperationContext ctx) {
+            return new Operation(
+                ctx.ID().getText(),
+                ctx.dataItem().stream().map(arg ->
+                    new Argument(arg.ID().getText(), arg.type().getText())
+                ),
+                ctx.type().getText()
             );
         }
     }

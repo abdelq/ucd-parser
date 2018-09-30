@@ -4,15 +4,10 @@ model : 'MODEL' ID declaration* ;
 
 declaration : ( classDecl | association | aggregation | generalization ) ';' ;
 
-classDecl : 'CLASS' ID 'ATTRIBUTES' attributes? 'OPERATIONS' operations? ;
+classDecl : 'CLASS' ID 'ATTRIBUTES' (dataItem (',' dataItem)*)?
+                       'OPERATIONS' (operation (',' operation)*)? ;
 
-attributes : attribute=dataItem (',' attribute=dataItem)* ;
-
-operations : operation (',' operation)* ;
-
-operation : ID '(' arguments? ')' ':' type ;
-
-arguments : argument=dataItem (',' argument=dataItem)* ;
+operation : ID '(' (dataItem (',' dataItem)*)? ')' ':' type ;
 
 dataItem : ID ':' type ;
 
@@ -22,7 +17,7 @@ association : 'RELATION' ID 'ROLES' role ',' role ;
 
 aggregation : 'AGGREGATION' 'CONTAINER' container=role 'PARTS' parts ;
 
-parts : part=role (',' part=role)* ;
+parts : role (',' role)* ;
 
 role : 'CLASS' ID multiplicity ;
 
@@ -36,8 +31,8 @@ multiplicity
 
 generalization : 'GENERALIZATION' ID 'SUBCLASSES' subclasses ;
 
-subclasses : subclass=ID (',' subclass=ID)* ;
+subclasses : ID (',' ID)* ;
 
-ID : [a-zA-Z0-9_]+ ;
+ID : [a-zA-Z_]+ ;
 
 WS : [ \r\t\n]+ -> skip ;
