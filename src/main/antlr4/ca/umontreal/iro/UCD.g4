@@ -38,6 +38,6 @@ generalization : 'GENERALIZATION' ID 'SUBCLASSES' subclasses ;
 
 subclasses : subclass=ID (',' subclass=ID)* ;
 
-ID : [a-zA-Z]+ ;
+ID : [a-zA-Z0-9_]+ ;
 
 WS : [ \r\t\n]+ -> skip ;
