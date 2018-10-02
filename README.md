@@ -5,7 +5,7 @@
     mvn compile
     mvn exec:java
 
-## Testing
+## Running Tests
 
     mvn test
 
