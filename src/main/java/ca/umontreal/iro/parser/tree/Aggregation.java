@@ -6,8 +6,8 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 public class Aggregation implements Declaration {
-    public Role container;
-    public List<Role> parts;
+    public final Role container;
+    public final List<Role> parts;
 
     public Aggregation(Role container, Stream<Role> parts) {
         this.container = container;

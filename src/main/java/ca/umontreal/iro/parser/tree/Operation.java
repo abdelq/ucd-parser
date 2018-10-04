@@ -6,9 +6,9 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 public class Operation {
-    public String id;
-    public List<Argument> arguments;
-    public String type;
+    private final String id;
+    private final List<Argument> arguments;
+    private final String type;
 
     public Operation(String id, Stream<Argument> arguments, String type) {
         this.id = id;

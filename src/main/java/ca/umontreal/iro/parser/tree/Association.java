@@ -1,9 +1,9 @@
 package ca.umontreal.iro.parser.tree;
 
 public class Association implements Declaration {
-    public String id;
-    public Role firstRole;
-    public Role secondRole;
+    private final String id;
+    public final Role firstRole;
+    public final Role secondRole;
 
     public Association(String id, Role firstRole, Role secondRole) {
         this.id = id;

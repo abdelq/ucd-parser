@@ -6,8 +6,8 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 public class Model {
-    public String id;
-    public List<Declaration> declarations;
+    private final String id;
+    private final List<Declaration> declarations;
 
     public Model(String id, Stream<Declaration> declarations) {
         this.id = id;

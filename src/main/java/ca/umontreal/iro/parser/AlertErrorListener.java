@@ -9,7 +9,7 @@ import java.io.File;
 
 import static javafx.scene.control.Alert.AlertType;
 
-public class AlertErrorListener extends BaseErrorListener {
+class AlertErrorListener extends BaseErrorListener {
     static final AlertErrorListener INSTANCE = new AlertErrorListener();
 
     @Override

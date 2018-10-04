@@ -7,9 +7,9 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 public class ClassDecl implements Declaration {
-    public String id;
-    public List<Attribute> attributes;
-    public List<Operation> operations;
+    public final String id;
+    public final List<Attribute> attributes;
+    public final List<Operation> operations;
 
     public ClassDecl(String id) {
         this.id = id;

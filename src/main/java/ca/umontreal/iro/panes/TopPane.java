@@ -97,7 +97,7 @@ public class TopPane extends MenuBar {
                 LeftPane.classes.setExpanded(true);
 
                 // XXX
-                ArrayList<TreeItem<ClassDecl>> trees = new ArrayList<TreeItem<ClassDecl>>();
+                ArrayList<TreeItem<ClassDecl>> trees = new ArrayList<>();
 
                 List<Generalization> generalizations = App.model.getDeclarationsOf(Generalization.class);
                 List<ClassDecl> classes = App.model.getDeclarationsOf(ClassDecl.class);
