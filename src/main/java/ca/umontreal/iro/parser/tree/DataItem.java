@@ -8,4 +8,9 @@ public class DataItem {
         this.id = id;
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s", type, id);
+    }
 }

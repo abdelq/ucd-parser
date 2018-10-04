@@ -8,4 +8,9 @@ public class Role {
         this.id = id;
         this.multiplicity = multiplicity;
     }
+
+    @Override
+    public String toString() {
+        return id + " " + multiplicity;
+    }
 }

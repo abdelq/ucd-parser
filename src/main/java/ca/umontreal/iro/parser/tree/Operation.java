@@ -15,4 +15,10 @@ public class Operation {
         this.arguments = arguments.collect(toList());
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        List<String> args =  arguments.stream().map(DataItem::toString).collect(toList());
+        return String.format("%s %s(%s)", type, id, String.join(", ", args));
+    }
 }

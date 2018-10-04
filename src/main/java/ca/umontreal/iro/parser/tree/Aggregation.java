@@ -13,4 +13,9 @@ public class Aggregation implements Declaration {
         this.container = container;
         this.parts = parts.collect(toList());
     }
+
+    @Override
+    public String toString() {
+        return container + " - " + parts;
+    }
 }

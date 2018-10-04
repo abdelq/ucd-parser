@@ -10,4 +10,9 @@ public class Association implements Declaration {
         this.firstRole = firstRole;
         this.secondRole = secondRole;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s: %s, %s", id, firstRole, secondRole);
+    }
 }
