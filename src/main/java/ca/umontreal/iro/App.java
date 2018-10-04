@@ -18,8 +18,8 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        var root = new BorderPane();
-        var scene = new Scene(root);
+        BorderPane root = new BorderPane();
+        Scene scene = new Scene(root);
 
         root.setTop(new TopPane());
         root.setLeft(new LeftPane());

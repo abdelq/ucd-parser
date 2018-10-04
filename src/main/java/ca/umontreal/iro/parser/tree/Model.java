@@ -1,8 +1,5 @@
 package ca.umontreal.iro.parser.tree;
 
-import javafx.scene.control.TreeItem;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 

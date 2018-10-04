@@ -11,10 +11,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 public class CenterPane extends GridPane {
-    public static ListView<Attribute> attributes = new ListView<>();
-    public static ListView<Operation> operations = new ListView<>();
-    public static ListView<Association> associations = new ListView<>();
-    public static ListView<Aggregation> aggregations = new ListView<>();
+    public static final ListView<Attribute> attributes = new ListView<>();
+    public static final ListView<Operation> operations = new ListView<>();
+    public static final ListView<Association> associations = new ListView<>();
+    public static final ListView<Aggregation> aggregations = new ListView<>();
 
     public CenterPane() {
         setPadding(new Insets(8));

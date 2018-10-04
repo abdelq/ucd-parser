@@ -15,8 +15,8 @@ import java.io.IOException;
 
 public class Parser {
     public static Model parseFile(File file) throws IOException {
-        var lexer = new UCDLexer(CharStreams.fromFileName(file.getPath()));
-        var parser = new UCDParser(new CommonTokenStream(lexer));
+        UCDLexer lexer = new UCDLexer(CharStreams.fromFileName(file.getPath()));
+        UCDParser parser = new UCDParser(new CommonTokenStream(lexer));
 
         parser.removeErrorListener(ConsoleErrorListener.INSTANCE);
         parser.addErrorListener(AlertErrorListener.INSTANCE);
@@ -25,8 +25,8 @@ public class Parser {
     }
 
     public static Model parseString(String string) {
-        var lexer = new UCDLexer(CharStreams.fromString(string));
-        var parser = new UCDParser(new CommonTokenStream(lexer));
+        UCDLexer lexer = new UCDLexer(CharStreams.fromString(string));
+        UCDParser parser = new UCDParser(new CommonTokenStream(lexer));
 
         return new ModelVisitor().visit(parser.model());
     }
@@ -34,7 +34,7 @@ public class Parser {
     private static class ModelVisitor extends UCDBaseVisitor<Model> {
         @Override
         public Model visitModel(ModelContext ctx) {
-            var visitor = new DeclarationVisitor();
+            DeclarationVisitor visitor = new DeclarationVisitor();
             return new Model(
                     ctx.ID().getText(),
                     ctx.declaration().stream().map(visitor::visit)
@@ -60,7 +60,7 @@ public class Parser {
     private static class ClassDeclVisitor extends UCDBaseVisitor<ClassDecl> {
         @Override
         public ClassDecl visitClassDecl(ClassDeclContext ctx) {
-            var visitor = new OperationVisitor();
+            OperationVisitor visitor = new OperationVisitor();
             return new ClassDecl(
                     ctx.ID().getText(),
                     ctx.attribute().stream().map(attr ->
@@ -74,7 +74,7 @@ public class Parser {
     private static class AssociationVisitor extends UCDBaseVisitor<Association> {
         @Override
         public Association visitAssociation(AssociationContext ctx) {
-            var visitor = new RoleVisitor();
+            RoleVisitor visitor = new RoleVisitor();
             return new Association(
                     ctx.ID().getText(),
                     ctx.role(0).accept(visitor),
@@ -86,7 +86,7 @@ public class Parser {
     private static class AggregationVisitor extends UCDBaseVisitor<Aggregation> {
         @Override
         public Aggregation visitAggregation(AggregationContext ctx) {
-            var visitor = new RoleVisitor();
+            RoleVisitor visitor = new RoleVisitor();
             return new Aggregation(
                     ctx.container.accept(visitor),
                     ctx.parts().role().stream().map(visitor::visit)

@@ -13,11 +13,14 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 
 public class LeftPane extends HBox {
-    public static TreeItem<ClassDecl> classes = new TreeItem<>(new ClassDecl("Classes"));
+    public static final TreeItem<ClassDecl> classes = new TreeItem<>(new ClassDecl("Classes"));
 
     public LeftPane() {
-        var treeView = new TreeView<>(classes);
+        TreeView<ClassDecl> treeView = new TreeView<>(classes);
         treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (App.model == null)
+                return;
+
             CenterPane.attributes.getItems().setAll(newValue.getValue().attributes);
             CenterPane.operations.getItems().setAll(newValue.getValue().operations);
 
@@ -44,7 +47,7 @@ public class LeftPane extends HBox {
             }
         });
 
-        var separator = new Separator(Orientation.VERTICAL);
+        Separator separator = new Separator(Orientation.VERTICAL);
         separator.setPadding(new Insets(0, 0, 0, 8));
 
         getChildren().addAll(treeView, separator);

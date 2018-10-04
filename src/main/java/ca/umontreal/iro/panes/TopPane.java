@@ -4,7 +4,6 @@ import ca.umontreal.iro.App;
 import ca.umontreal.iro.parser.Parser;
 import ca.umontreal.iro.parser.tree.ClassDecl;
 import ca.umontreal.iro.parser.tree.Generalization;
-import ca.umontreal.iro.parser.tree.Model;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
@@ -19,14 +18,14 @@ import static javafx.application.Platform.exit;
 import static javafx.scene.control.Alert.AlertType;
 
 public class TopPane extends MenuBar {
-    private FileChooser fileChooser = openFileChooser();
+    private final FileChooser fileChooser = openFileChooser();
 
     public TopPane() {
         getMenus().addAll(fileMenu()/*, viewMenu()*/);
     }
 
     private FileChooser openFileChooser() {
-        var chooser = new FileChooser();
+        FileChooser chooser = new FileChooser();
         chooser.setTitle("Open File");
         chooser.getExtensionFilters().addAll(
                 new ExtensionFilter("UCD Files", "*.ucd"),
@@ -36,19 +35,19 @@ public class TopPane extends MenuBar {
     }
 
     private Menu fileMenu() {
-        var menu = new Menu("Fichier");
+        Menu menu = new Menu("Fichier");
 
-        var openItem = new MenuItem("Ouvrir");
+        MenuItem openItem = new MenuItem("Ouvrir");
         openItem.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
         openItem.setOnAction(event -> open());
 
-        var closeItem = new MenuItem("Fermer");
+        MenuItem closeItem = new MenuItem("Fermer");
         closeItem.setAccelerator(KeyCombination.keyCombination("Ctrl+W"));
         closeItem.setOnAction(event -> close());
 
-        var separatorItem = new SeparatorMenuItem();
+        MenuItem separatorItem = new SeparatorMenuItem();
 
-        var exitItem = new MenuItem("Quitter");
+        MenuItem exitItem = new MenuItem("Quitter");
         exitItem.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
         exitItem.setOnAction(event -> exit());
 
@@ -58,27 +57,27 @@ public class TopPane extends MenuBar {
     }
 
     private Menu viewMenu() {
-        var menu = new Menu("Affichage");
+        Menu menu = new Menu("Affichage");
 
-        var attributesItem = new CheckMenuItem("Attributs");
+        CheckMenuItem attributesItem = new CheckMenuItem("Attributs");
         attributesItem.setSelected(true);
         attributesItem.setOnAction(e -> {
             // TODO
         });
 
-        var operationsItem = new CheckMenuItem("Méthodes");
+        CheckMenuItem operationsItem = new CheckMenuItem("Méthodes");
         operationsItem.setSelected(true);
         operationsItem.setOnAction(e -> {
             // TODO
         });
 
-        var associationsItem = new CheckMenuItem("Associations");
+        CheckMenuItem associationsItem = new CheckMenuItem("Associations");
         associationsItem.setSelected(true);
         associationsItem.setOnAction(e -> {
             // TODO
         });
 
-        var aggregationsItem = new CheckMenuItem("Aggrégations");
+        CheckMenuItem aggregationsItem = new CheckMenuItem("Aggrégations");
         aggregationsItem.setSelected(true);
         aggregationsItem.setOnAction(e -> {
             // TODO
@@ -97,7 +96,7 @@ public class TopPane extends MenuBar {
                 LeftPane.classes.setExpanded(true);
 
                 // XXX
-                var trees = new ArrayList<TreeItem<ClassDecl>>();
+                ArrayList<TreeItem<ClassDecl>> trees = new ArrayList<TreeItem<ClassDecl>>();
 
                 List<Generalization> generalizations = App.model.getDeclarationsOf(Generalization.class);
                 List<ClassDecl> classes = App.model.getDeclarationsOf(ClassDecl.class);
@@ -106,7 +105,7 @@ public class TopPane extends MenuBar {
                 for (Generalization generalization : generalizations) {
                     for (ClassDecl classDecl : classes) {
                         if (classDecl.id.equals(generalization.id)) {
-                            var treeItem = new TreeItem<>(classDecl);
+                            TreeItem<ClassDecl> treeItem = new TreeItem<>(classDecl);
                             for (ClassDecl subclass : classes) {
                                 if (generalization.subclasses.contains(subclass.id)) {
                                     treeItem.getChildren().add(new TreeItem<>(subclass));
