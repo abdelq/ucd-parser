@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public class CenterPane extends GridPane {
@@ -21,11 +22,24 @@ public class CenterPane extends GridPane {
         setHgap(8);
         setVgap(8);
 
-        // TODO Resize to full size
+        VBox attributesBox = new VBox(new Label("Attributs"), attributes);
+        add(attributesBox, 0, 0);
+        setHgrow(attributesBox, Priority.ALWAYS);
+        setVgrow(attributesBox, Priority.ALWAYS);
 
-        add(new VBox(new Label("Attributs"), attributes), 0, 0);
-        add(new VBox(new Label("Méthodes"), operations), 1, 0);
-        add(new VBox(new Label("Associations"), associations), 0, 1);
-        add(new VBox(new Label("Aggrégations"), aggregations), 1, 1);
+        VBox operationsBox = new VBox(new Label("Méthodes"), operations);
+        add(operationsBox, 1, 0);
+        setHgrow(operationsBox, Priority.ALWAYS);
+        setVgrow(operationsBox, Priority.ALWAYS);
+
+        VBox associationsBox = new VBox(new Label("Associations"), associations);
+        add(associationsBox, 0, 1);
+        setHgrow(associationsBox, Priority.ALWAYS);
+        setVgrow(associationsBox, Priority.ALWAYS);
+
+        VBox aggregationsBox = new VBox(new Label("Aggrégations"), aggregations);
+        add(aggregationsBox, 1, 1);
+        setHgrow(aggregationsBox, Priority.ALWAYS);
+        setVgrow(aggregationsBox, Priority.ALWAYS);
     }
 }

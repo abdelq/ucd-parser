@@ -89,6 +89,7 @@ public class TopPane extends MenuBar {
     }
 
     private void open() {
+        close(); // XXX
         File file = fileChooser.showOpenDialog(getScene().getWindow());
         if (file != null) {
             try {
