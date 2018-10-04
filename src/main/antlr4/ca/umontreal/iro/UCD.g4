@@ -4,12 +4,14 @@ model : 'MODEL' ID declaration* ;
 
 declaration : ( classDecl | association | aggregation | generalization ) ';' ;
 
-classDecl : 'CLASS' ID 'ATTRIBUTES' (dataItem (',' dataItem)*)?
+classDecl : 'CLASS' ID 'ATTRIBUTES' (attribute (',' attribute)*)?
                        'OPERATIONS' (operation (',' operation)*)? ;
 
-operation : ID '(' (dataItem (',' dataItem)*)? ')' ':' type ;
+attribute : ID ':' type ;
 
-dataItem : ID ':' type ;
+operation : ID '(' (argument (',' argument)*)? ')' ':' type ;
+
+argument : ID ':' type ;
 
 type : ID ;
 
