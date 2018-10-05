@@ -7,7 +7,7 @@ import static java.util.stream.Collectors.toList;
 
 public class Operation {
     public final String id;
-    public final List<Argument> arguments;
+    final List<Argument> arguments;
     public final String type;
 
     public Operation(String id, Stream<Argument> arguments, String type) {

@@ -129,8 +129,7 @@ public class TopPane extends MenuBar {
             return; // XXX
         }
 
-        // Create the class tree
-        // FIXME What about generalization of generalization
+        // XXX Create the class tree
         Collection<TreeItem<ClassDecl>> treeItems = new ArrayList<>();
         List<ClassDecl> classesInTree = new ArrayList<>();
 

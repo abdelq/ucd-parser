@@ -10,8 +10,8 @@ public class Model {
     public final String id;
 
     public List<ClassDecl> classes = new ArrayList<>();
-    public List<Association> associations = new ArrayList<>();
-    public List<Aggregation> aggregations = new ArrayList<>();
+    List<Association> associations = new ArrayList<>();
+    List<Aggregation> aggregations = new ArrayList<>();
     public List<Generalization> generalizations = new ArrayList<>();
 
     public Model(String id, Stream<Declaration> declarations) {
