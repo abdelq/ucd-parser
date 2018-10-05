@@ -17,9 +17,10 @@ type : ID ;
 
 association : 'RELATION' ID 'ROLES' role ',' role ;
 
-aggregation : 'AGGREGATION' 'CONTAINER' container=role 'PARTS' parts ;
+aggregation : 'AGGREGATION' 'CONTAINER' container=role
+                            'PARTS' part (',' part)* ;
 
-parts : role (',' role)* ;
+part : role ;
 
 role : 'CLASS' ID multiplicity ;
 
@@ -31,9 +32,9 @@ multiplicity
     | 'UNDEFINED'
     ;
 
-generalization : 'GENERALIZATION' ID 'SUBCLASSES' subclasses ;
+generalization : 'GENERALIZATION' ID 'SUBCLASSES' subclass (',' subclass)* ;
 
-subclasses : ID (',' ID)* ;
+subclass : ID ;
 
 ID : [a-zA-Z_]+ ;
 

@@ -1,56 +1,44 @@
 package ca.umontreal.iro.panes;
 
-import ca.umontreal.iro.App;
-import ca.umontreal.iro.parser.tree.Aggregation;
-import ca.umontreal.iro.parser.tree.Association;
 import ca.umontreal.iro.parser.tree.ClassDecl;
-import ca.umontreal.iro.parser.tree.Role;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
-public class LeftPane extends HBox {
-    public static final TreeItem<ClassDecl> classes = new TreeItem<>(new ClassDecl("Classes"));
+public class LeftPane extends VBox {
+    /**
+     * Class section of the GUI
+     */
+    static final TreeItem<ClassDecl> classes = new TreeItem<>();
 
     public LeftPane() {
         TreeView<ClassDecl> treeView = new TreeView<>(classes);
+        treeView.setShowRoot(false);
         treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (App.model == null)
-                return;
+            if (newValue != null) {
+                ClassDecl decl = newValue.getValue();
 
-            CenterPane.attributes.getItems().setAll(newValue.getValue().attributes);
-            CenterPane.operations.getItems().setAll(newValue.getValue().operations);
-
-            // XXX
-            CenterPane.associations.getItems().clear();
-            for (Association assoc : App.model.getDeclarationsOf(Association.class)) {
-                if (assoc.firstRole.id.equals(newValue.getValue().id))
-                    CenterPane.associations.getItems().add(assoc);
-                else if (assoc.secondRole.id.equals(newValue.getValue().id))
-                    CenterPane.associations.getItems().add(assoc);
-            }
-
-            // XXX
-            CenterPane.aggregations.getItems().clear();
-            for (Aggregation aggr : App.model.getDeclarationsOf(Aggregation.class)) {
-                if (aggr.container.id.equals(newValue.getValue().id)) {
-                    CenterPane.aggregations.getItems().add(aggr);
-                    continue;
-                }
-                for (Role part : aggr.parts) {
-                    if (part.id.equals(newValue.getValue().id))
-                        CenterPane.aggregations.getItems().add(aggr);
-                }
+                CenterPane.attributes.getItems().setAll(decl.getAttributes());
+                CenterPane.operations.getItems().setAll(decl.getOperations());
+                CenterPane.associations.getItems().setAll(decl.getAssociations());
+                CenterPane.aggregations.getItems().setAll(decl.getAggregations());
+                BottomPane.details.setText(decl.getDetails());
             }
         });
 
         Separator separator = new Separator(Orientation.VERTICAL);
         separator.setPadding(new Insets(0, 0, 0, 8));
 
-        getChildren().addAll(treeView, separator);
+        HBox hBox = new HBox(treeView, separator);
+        setVgrow(hBox, Priority.ALWAYS);
+
+        getChildren().addAll(new Label("Classes"), hBox);
         setPadding(new Insets(8, 0, 8, 8));
     }
 }

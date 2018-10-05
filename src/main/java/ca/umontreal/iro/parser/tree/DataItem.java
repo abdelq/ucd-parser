@@ -1,8 +1,8 @@
 package ca.umontreal.iro.parser.tree;
 
 class DataItem {
-    private final String id;
-    private final String type;
+    public final String id;
+    public final String type;
 
     DataItem(String id, String type) {
         this.id = id;

@@ -10,6 +10,9 @@ import java.io.File;
 import static javafx.scene.control.Alert.AlertType;
 
 class AlertErrorListener extends BaseErrorListener {
+    /**
+     * Provides a default instance of {@link AlertErrorListener}.
+     */
     static final AlertErrorListener INSTANCE = new AlertErrorListener();
 
     @Override

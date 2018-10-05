@@ -6,9 +6,9 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 public class Operation {
-    private final String id;
-    private final List<Argument> arguments;
-    private final String type;
+    public final String id;
+    public final List<Argument> arguments;
+    public final String type;
 
     public Operation(String id, Stream<Argument> arguments, String type) {
         this.id = id;
@@ -18,7 +18,7 @@ public class Operation {
 
     @Override
     public String toString() {
-        List<String> args =  arguments.stream().map(DataItem::toString).collect(toList());
+        List<String> args = arguments.stream().map(DataItem::toString).collect(toList());
         return String.format("%s %s(%s)", type, id, String.join(", ", args));
     }
 }

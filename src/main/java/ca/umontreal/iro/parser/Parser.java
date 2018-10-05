@@ -5,44 +5,85 @@ import ca.umontreal.iro.UCDLexer;
 import ca.umontreal.iro.UCDParser;
 import ca.umontreal.iro.UCDParser.*;
 import ca.umontreal.iro.parser.tree.*;
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ConsoleErrorListener;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Parser {
-    public static Model parseFile(File file) throws IOException {
-        UCDLexer lexer = new UCDLexer(CharStreams.fromFileName(file.getPath()));
-        UCDParser parser = new UCDParser(new CommonTokenStream(lexer));
+    /**
+     * Error listener for use by the parser.
+     */
+    private BaseErrorListener errorListener;
 
-        parser.removeErrorListener(ConsoleErrorListener.INSTANCE);
-        parser.addErrorListener(AlertErrorListener.INSTANCE);
-
-        return new ModelVisitor().visit(parser.model());
+    public Parser() {
+        errorListener = AlertErrorListener.INSTANCE;
     }
 
-    public static Model parseString(String string) {
-        UCDLexer lexer = new UCDLexer(CharStreams.fromString(string));
-        UCDParser parser = new UCDParser(new CommonTokenStream(lexer));
-
-        return new ModelVisitor().visit(parser.model());
+    /**
+     * @param listener error listener
+     */
+    public Parser(BaseErrorListener listener) {
+        errorListener = listener;
     }
 
-    private static class ModelVisitor extends UCDBaseVisitor<Model> {
+    /**
+     * Parses a stream of characters following the UCD format.
+     *
+     * @param stream source of characters for the lexer
+     * @return use case model
+     */
+    private Model parseModel(CharStream stream) throws Exception {
+        UCDLexer lexer = new UCDLexer(stream);
+        UCDParser parser = new UCDParser(new CommonTokenStream(lexer));
+
+        parser.removeErrorListeners();
+        parser.addErrorListener(errorListener);
+
+        Model model = new ModelVisitor().visit(parser.model());
+        if (parser.getNumberOfSyntaxErrors() > 0)
+            throw new Exception(); // XXX
+
+        return model;
+    }
+
+    /**
+     * Parses a file following the UCD format.
+     *
+     * @param file file to parse
+     * @return use case model
+     * @throws IOException if an input or output exception occured
+     */
+    public Model parseModel(File file) throws Exception {
+        return parseModel(CharStreams.fromFileName(file.getPath()));
+    }
+
+    /**
+     * Parses a string following the UCD format.
+     *
+     * @param string string to parse
+     * @return use case model
+     */
+    public Model parseModel(String string) throws Exception {
+        return parseModel(CharStreams.fromString(string));
+    }
+
+    private class ModelVisitor extends UCDBaseVisitor<Model> {
         @Override
         public Model visitModel(ModelContext ctx) {
-            DeclarationVisitor visitor = new DeclarationVisitor();
+            DeclarationVisitor declarationVisitor = new DeclarationVisitor();
             return new Model(
                     ctx.ID().getText(),
-                    ctx.declaration().stream().map(visitor::visit)
+                    ctx.declaration().stream().map(declarationVisitor::visit)
             );
         }
     }
 
-    private static class DeclarationVisitor extends UCDBaseVisitor<Declaration> {
+    private class DeclarationVisitor extends UCDBaseVisitor<Declaration> {
         @Override
         public Declaration visitDeclaration(DeclarationContext ctx) {
             if (ctx.classDecl() != null)
@@ -57,54 +98,54 @@ public class Parser {
         }
     }
 
-    private static class ClassDeclVisitor extends UCDBaseVisitor<ClassDecl> {
+    private class ClassDeclVisitor extends UCDBaseVisitor<ClassDecl> {
         @Override
         public ClassDecl visitClassDecl(ClassDeclContext ctx) {
-            OperationVisitor visitor = new OperationVisitor();
+            OperationVisitor operationVisitor = new OperationVisitor();
             return new ClassDecl(
                     ctx.ID().getText(),
                     ctx.attribute().stream().map(attr ->
                             new Attribute(attr.ID().getText(), attr.type().getText())
                     ),
-                    ctx.operation().stream().map(visitor::visit)
+                    ctx.operation().stream().map(operationVisitor::visit)
             );
         }
     }
 
-    private static class AssociationVisitor extends UCDBaseVisitor<Association> {
+    private class AssociationVisitor extends UCDBaseVisitor<Association> {
         @Override
         public Association visitAssociation(AssociationContext ctx) {
-            RoleVisitor visitor = new RoleVisitor();
+            RoleVisitor roleVisitor = new RoleVisitor();
             return new Association(
                     ctx.ID().getText(),
-                    ctx.role(0).accept(visitor),
-                    ctx.role(1).accept(visitor)
+                    ctx.role(0).accept(roleVisitor),
+                    ctx.role(1).accept(roleVisitor)
             );
         }
     }
 
-    private static class AggregationVisitor extends UCDBaseVisitor<Aggregation> {
+    private class AggregationVisitor extends UCDBaseVisitor<Aggregation> {
         @Override
         public Aggregation visitAggregation(AggregationContext ctx) {
-            RoleVisitor visitor = new RoleVisitor();
+            RoleVisitor roleVisitor = new RoleVisitor();
             return new Aggregation(
-                    ctx.container.accept(visitor),
-                    ctx.parts().role().stream().map(visitor::visit)
+                    ctx.container.accept(roleVisitor),
+                    ctx.part().stream().map(roleVisitor::visit)
             );
         }
     }
 
-    private static class GeneralizationVisitor extends UCDBaseVisitor<Generalization> {
+    private class GeneralizationVisitor extends UCDBaseVisitor<Generalization> {
         @Override
         public Generalization visitGeneralization(GeneralizationContext ctx) {
             return new Generalization(
                     ctx.ID().getText(),
-                    ctx.subclasses().ID().stream().map(ParseTree::getText)
+                    ctx.subclass().stream().map(ParseTree::getText)
             );
         }
     }
 
-    private static class OperationVisitor extends UCDBaseVisitor<Operation> {
+    private class OperationVisitor extends UCDBaseVisitor<Operation> {
         @Override
         public Operation visitOperation(OperationContext ctx) {
             return new Operation(
@@ -117,7 +158,7 @@ public class Parser {
         }
     }
 
-    private static class RoleVisitor extends UCDBaseVisitor<Role> {
+    private class RoleVisitor extends UCDBaseVisitor<Role> {
         @Override
         public Role visitRole(RoleContext ctx) {
             return new Role(

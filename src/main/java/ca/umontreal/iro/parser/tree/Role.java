@@ -11,6 +11,6 @@ public class Role {
 
     @Override
     public String toString() {
-        return id + " " + multiplicity;
+        return String.format("%s %s", id, multiplicity);
     }
 }

@@ -4,46 +4,51 @@ import ca.umontreal.iro.App;
 import ca.umontreal.iro.parser.Parser;
 import ca.umontreal.iro.parser.tree.ClassDecl;
 import ca.umontreal.iro.parser.tree.Generalization;
+import ca.umontreal.iro.parser.tree.Model;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static javafx.application.Platform.exit;
 import static javafx.scene.control.Alert.AlertType;
 
 public class TopPane extends MenuBar {
-    private final FileChooser fileChooser = openFileChooser();
+    private final FileChooser fileChooser = new FileChooser();
+    private final Parser parser = new Parser();
 
     public TopPane() {
-        getMenus().addAll(fileMenu()/*, viewMenu()*/);
-    }
-
-    private FileChooser openFileChooser() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Open File");
-        chooser.getExtensionFilters().addAll(
+        fileChooser.setTitle("Open File");
+        fileChooser.getExtensionFilters().addAll(
                 new ExtensionFilter("UCD Files", "*.ucd"),
                 new ExtensionFilter("All Files", "*.*")
         );
-        return chooser;
+
+        getMenus().addAll(createFileMenu()/*, createViewMenu()*/);
     }
 
-    private Menu fileMenu() {
+    /**
+     * Creates the File menu.
+     *
+     * @return file menu
+     */
+    private Menu createFileMenu() {
         Menu menu = new Menu("Fichier");
 
         MenuItem openItem = new MenuItem("Ouvrir");
         openItem.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
         openItem.setOnAction(event -> open());
 
-        MenuItem closeItem = new MenuItem("Fermer");
-        closeItem.setAccelerator(KeyCombination.keyCombination("Ctrl+W"));
-        closeItem.setOnAction(event -> close());
+        MenuItem clearItem = new MenuItem("Fermer");
+        clearItem.setAccelerator(KeyCombination.keyCombination("Ctrl+W"));
+        clearItem.setOnAction(event -> clear());
 
         MenuItem separatorItem = new SeparatorMenuItem();
 
@@ -51,12 +56,17 @@ public class TopPane extends MenuBar {
         exitItem.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
         exitItem.setOnAction(event -> exit());
 
-        menu.getItems().addAll(openItem, closeItem, separatorItem, exitItem);
+        menu.getItems().addAll(openItem, clearItem, separatorItem, exitItem);
 
         return menu;
     }
 
-    private Menu viewMenu() {
+    /**
+     * Creates the View menu.
+     *
+     * @return view menu
+     */
+    private Menu createViewMenu() {
         Menu menu = new Menu("Affichage");
 
         CheckMenuItem attributesItem = new CheckMenuItem("Attributs");
@@ -83,61 +93,94 @@ public class TopPane extends MenuBar {
             // TODO
         });
 
-        menu.getItems().addAll(attributesItem, operationsItem, associationsItem, aggregationsItem);
+        CheckMenuItem detailsItem = new CheckMenuItem("Détails");
+        detailsItem.setSelected(true);
+        detailsItem.setOnAction(e -> {
+            // TODO
+        });
+
+        menu.getItems().addAll(attributesItem, operationsItem,
+                associationsItem, aggregationsItem,
+                detailsItem);
 
         return menu;
     }
 
+    /**
+     * Opens a new file from the dialog and updates the interface.
+     */
     private void open() {
-        close(); // XXX
+        // Open the dialog
         File file = fileChooser.showOpenDialog(getScene().getWindow());
-        if (file != null) {
-            try {
-                App.model = Parser.parseFile(file);
-                LeftPane.classes.setExpanded(true);
+        if (file == null)
+            return;
 
-                // XXX
-                ArrayList<TreeItem<ClassDecl>> trees = new ArrayList<>();
+        // Parse the file
+        Model model;
+        try {
+            model = parser.parseModel(file);
+        } catch (IOException e) {
+            new Alert(
+                    AlertType.ERROR,
+                    String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage())
+            ).show();
+            return;
+        } catch (Exception e) {
+            return; // XXX
+        }
 
-                List<Generalization> generalizations = App.model.getDeclarationsOf(Generalization.class);
-                List<ClassDecl> classes = App.model.getDeclarationsOf(ClassDecl.class);
-                List<ClassDecl> classesInTree = new ArrayList<>();
+        // Create the class tree
+        // FIXME What about generalization of generalization
+        Collection<TreeItem<ClassDecl>> treeItems = new ArrayList<>();
+        List<ClassDecl> classesInTree = new ArrayList<>();
 
-                for (Generalization generalization : generalizations) {
-                    for (ClassDecl classDecl : classes) {
-                        if (classDecl.id.equals(generalization.id)) {
-                            TreeItem<ClassDecl> treeItem = new TreeItem<>(classDecl);
-                            for (ClassDecl subclass : classes) {
-                                if (generalization.subclasses.contains(subclass.id)) {
-                                    treeItem.getChildren().add(new TreeItem<>(subclass));
-                                    classesInTree.add(subclass);
-                                }
-                            }
-                            treeItem.setExpanded(true);
-                            trees.add(treeItem);
-                            classesInTree.add(classDecl);
-                            break;
+        for (Generalization gen : model.generalizations) {
+            for (ClassDecl cls : model.classes) {
+                if (cls.id.equals(gen.id)) {
+                    TreeItem<ClassDecl> treeItem = new TreeItem<>(cls);
+                    for (ClassDecl subcls : model.classes) {
+                        if (gen.subclasses.contains(subcls.id)) {
+                            treeItem.getChildren().add(new TreeItem<>(subcls));
+                            classesInTree.add(subcls);
                         }
                     }
+                    treeItem.setExpanded(true);
+                    treeItems.add(treeItem);
+                    classesInTree.add(cls);
+                    break;
                 }
-
-                for (ClassDecl classDecl : classes) {
-                    if (!classesInTree.contains(classDecl))
-                        trees.add(new TreeItem<>(classDecl));
-                }
-
-                LeftPane.classes.getChildren().addAll(trees);
-            } catch (IOException e) {
-                new Alert(AlertType.ERROR, String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage())).show();
             }
         }
+
+        for (ClassDecl cls : model.classes) {
+            if (!classesInTree.contains(cls))
+                treeItems.add(new TreeItem<>(cls));
+        }
+
+        // Update the interface
+        App.model = model;
+        ((Stage) getScene().getWindow()).setTitle(App.model.id + " - UCD Parser"); // XXX
+
+        LeftPane.classes.getChildren().addAll(treeItems);
+        CenterPane.attributes.getItems().clear();
+        CenterPane.operations.getItems().clear();
+        CenterPane.associations.getItems().clear();
+        CenterPane.aggregations.getItems().clear();
+        BottomPane.details.clear();
     }
 
-    private void close() {
+    /**
+     * Clears the interface.
+     */
+    private void clear() {
+        App.model = null;
+        ((Stage) getScene().getWindow()).setTitle("UCD Parser"); // XXX
+
         LeftPane.classes.getChildren().clear();
         CenterPane.attributes.getItems().clear();
         CenterPane.operations.getItems().clear();
         CenterPane.associations.getItems().clear();
         CenterPane.aggregations.getItems().clear();
+        BottomPane.details.clear();
     }
 }
