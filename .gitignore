@@ -3,6 +3,3 @@ target/
 
 # IntelliJ
 .idea/
-
-# Pandoc
-*.pdf
