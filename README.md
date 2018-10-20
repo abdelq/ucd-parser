@@ -8,6 +8,10 @@
 
     mvn test
 
+## Generating Javadoc
+
+    mvn javadoc:javadoc
+
 ## License
 
 This project is licensed under the [ISC License](LICENSE.txt).
