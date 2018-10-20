@@ -1,9 +1,6 @@
 package ca.umontreal.iro;
 
-import ca.umontreal.iro.panes.BottomPane;
-import ca.umontreal.iro.panes.CenterPane;
-import ca.umontreal.iro.panes.LeftPane;
-import ca.umontreal.iro.panes.TopPane;
+import ca.umontreal.iro.panes.*;
 import ca.umontreal.iro.parser.tree.Model;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -23,15 +20,13 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        BorderPane root = new BorderPane();
-        Scene scene = new Scene(root);
+        primaryStage.setTitle("Parseur UCD");
 
-        root.setTop(new TopPane());
-        root.setLeft(new LeftPane());
-        root.setCenter(new VBox(new CenterPane(), new BottomPane()));
+        primaryStage.setScene(new Scene(new BorderPane(
+            new VBox(new CenterPane(), new BottomPane()),
+            new TopPane(), new RightPane(), null, new LeftPane()
+        )));
 
-        primaryStage.setTitle("UCD Parser");
-        primaryStage.setScene(scene);
         primaryStage.show();
     }
 }
