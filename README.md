@@ -2,8 +2,7 @@
 
 ## Getting Started
 
-    mvn compile
-    mvn exec:java
+    mvn compile exec:java
 
 ## Running Tests
 
