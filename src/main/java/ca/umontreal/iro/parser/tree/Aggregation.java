@@ -16,6 +16,6 @@ public class Aggregation implements Declaration {
 
     @Override
     public String toString() {
-        return container + " - " + parts; // XXX
+        return container + " - " + parts;
     }
 }

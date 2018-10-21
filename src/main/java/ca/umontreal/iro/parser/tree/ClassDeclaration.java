@@ -42,7 +42,7 @@ public class ClassDeclaration implements Declaration {
 
     public List<Association> getAssociations() {
         if (associations == null) {
-            associations = App.getModel().associations.parallelStream().filter(asso ->
+            associations = App.getModel().associations.filter(asso ->
                     asso.firstRole.id.equals(id) || asso.secondRole.id.equals(id)
             ).collect(toList());
         }
@@ -51,7 +51,7 @@ public class ClassDeclaration implements Declaration {
 
     public List<Aggregation> getAggregations() {
         if (aggregations == null) {
-            aggregations = App.getModel().aggregations.parallelStream().filter(aggr ->
+            aggregations = App.getModel().aggregations.filter(aggr ->
                     aggr.container.id.equals(id) || aggr.parts.parallelStream().anyMatch(part -> part.id.equals(id))
             ).collect(toList());
         }

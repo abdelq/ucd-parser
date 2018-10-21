@@ -84,9 +84,9 @@ public class TopPane extends MenuBar {
         }
 
         // Generate the hierarchy tree of classes
-        var treeItems = model.classes.parallelStream().map(TreeItem::new).collect(toList());
+        var treeItems = model.classes.map(TreeItem::new).collect(toList());
 
-        for (var gen : model.generalizations) {
+        model.generalizations.forEach(gen -> {
             var children = treeItems.parallelStream().filter(item ->
                     gen.subclasses.contains(item.getValue().id)
             ).collect(toList());
@@ -97,7 +97,7 @@ public class TopPane extends MenuBar {
             ).findAny().get(); // XXX
             parent.setExpanded(true);
             parent.getChildren().addAll(children);
-        }
+        });
 
         App.setModel(model);
         LeftPane.classes.getChildren().setAll(treeItems);
@@ -149,6 +149,6 @@ public class TopPane extends MenuBar {
      * Generates a CSV file with metrics for each class.
      */
     private void export() {
-        // TODO
+        //App.getModel().classes.map(decl -> decl.id + "," + decl.getMetrics()); // TODO
     }
 }

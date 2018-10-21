@@ -37,7 +37,7 @@ public class App extends Application {
     /**
      * Gets the current use case model.
      *
-     * @return
+     * @return use case model
      */
     public static Model getModel() {
         return model;
