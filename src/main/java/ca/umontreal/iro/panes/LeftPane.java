@@ -34,4 +34,11 @@ public class LeftPane extends VBox {
         getChildren().addAll(new Label("Classes"), treeView);
         setPadding(new Insets(8));
     }
+
+    /**
+     * Clears classes.
+     */
+    static void clear() {
+        classes.getChildren().clear();
+    }
 }

@@ -35,4 +35,11 @@ public class RightPane extends VBox {
         getChildren().addAll(new Label("Métriques"), metrics);
         setPadding(new Insets(8));
     }
+
+    /**
+     * Clears metrics.
+     */
+    static void clear() {
+        metrics.getItems().clear();
+    }
 }

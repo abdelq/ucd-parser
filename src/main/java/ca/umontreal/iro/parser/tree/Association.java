@@ -1,9 +1,11 @@
 package ca.umontreal.iro.parser.tree;
 
+import static java.lang.String.format;
+
 public class Association implements Declaration {
-    private final String id;
     final Role firstRole;
     final Role secondRole;
+    private final String id;
 
     public Association(String id, Role firstRole, Role secondRole) {
         this.id = id;
@@ -13,6 +15,6 @@ public class Association implements Declaration {
 
     @Override
     public String toString() {
-        return String.format("%s: %s, %s", id, firstRole, secondRole);
+        return format("%s : %s, %s", id, firstRole, secondRole);
     }
 }

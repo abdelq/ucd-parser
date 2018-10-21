@@ -35,7 +35,7 @@ public class App extends Application {
     }
 
     /**
-     * TODO
+     * Gets the current use case model.
      *
      * @return
      */
@@ -44,9 +44,9 @@ public class App extends Application {
     }
 
     /**
-     * TODO
+     * Sets the current use case model and updates the application's title.
      *
-     * @param model
+     * @param model use case model
      */
     public static void setModel(Model model) {
         if ((App.model = model) != null) {

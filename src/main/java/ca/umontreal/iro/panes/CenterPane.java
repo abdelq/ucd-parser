@@ -50,4 +50,14 @@ public class CenterPane extends GridPane {
         setVgap(8);
         setPadding(new Insets(8, 0, 0, 0));
     }
+
+    /**
+     * Clears attributes, operations, associations and aggregations.
+     */
+    static void clear() {
+        attributes.getItems().clear();
+        operations.getItems().clear();
+        associations.getItems().clear();
+        aggregations.getItems().clear();
+    }
 }

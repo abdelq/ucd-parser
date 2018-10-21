@@ -13,9 +13,16 @@ public class BottomPane extends VBox {
 
     public BottomPane() {
         details.setEditable(false);
-        details.setPrefRowCount(25);
+        details.setPrefRowCount(24);
 
         getChildren().addAll(new Label("Détails"), details);
         setPadding(new Insets(8));
+    }
+
+    /**
+     * Clears details.
+     */
+    static void clear() {
+        details.clear();
     }
 }

@@ -1,6 +1,6 @@
 package ca.umontreal.iro.parser.tree;
 
-class DataItem {
+public class DataItem {
     public final String id;
     public final String type;
 
@@ -11,6 +11,6 @@ class DataItem {
 
     @Override
     public String toString() {
-        return String.format("%s %s", type, id);
+        return type + " " + id;
     }
 }

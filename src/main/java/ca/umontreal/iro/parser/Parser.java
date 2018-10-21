@@ -24,7 +24,7 @@ public class Parser {
     private ANTLRErrorListener errorListener;
 
     public Parser() {
-        errorListener = AlertErrorListener.INSTANCE;
+        errorListener = ThrowingErrorListener.INSTANCE;
     }
 
     /**
@@ -47,7 +47,7 @@ public class Parser {
         parser.removeErrorListeners();
         parser.addErrorListener(errorListener);
 
-        return new ModelVisitor().visit(parser.model());
+        return parser.model().accept(new ModelVisitor());
     }
 
     /**
@@ -77,7 +77,7 @@ public class Parser {
             var declarationVisitor = new DeclarationVisitor();
             return new Model(
                     ctx.ID().getText(),
-                    ctx.declaration().stream().map(declarationVisitor::visit)
+                    ctx.declaration().parallelStream().map(declarationVisitor::visit)
             );
         }
     }
@@ -86,29 +86,29 @@ public class Parser {
         @Override
         public Declaration visitDeclaration(DeclarationContext ctx) {
             ParseTree tree;
-            if ((tree = ctx.classDecl()) != null) {
-                return new ClassDeclVisitor().visit(tree);
+            if ((tree = ctx.classDeclaration()) != null) {
+                return tree.accept(new ClassDeclarationVisitor());
             } else if ((tree = ctx.association()) != null) {
-                return new AssociationVisitor().visit(tree);
+                return tree.accept(new AssociationVisitor());
             } else if ((tree = ctx.aggregation()) != null) {
-                return new AggregationVisitor().visit(tree);
+                return tree.accept(new AggregationVisitor());
             } else if ((tree = ctx.generalization()) != null) {
-                return new GeneralizationVisitor().visit(tree);
+                return tree.accept(new GeneralizationVisitor());
             }
             return null;
         }
     }
 
-    private class ClassDeclVisitor extends UCDBaseVisitor<ClassDecl> {
+    private class ClassDeclarationVisitor extends UCDBaseVisitor<ClassDeclaration> {
         @Override
-        public ClassDecl visitClassDecl(ClassDeclContext ctx) {
+        public ClassDeclaration visitClassDeclaration(ClassDeclarationContext ctx) {
             var operationVisitor = new OperationVisitor();
-            return new ClassDecl(
+            return new ClassDeclaration(
                     ctx.ID().getText(),
-                    ctx.attribute().stream().map(attr ->
+                    ctx.attribute().parallelStream().map(attr ->
                             new Attribute(attr.ID().getText(), attr.type().getText())
                     ),
-                    ctx.operation().stream().map(operationVisitor::visit)
+                    ctx.operation().parallelStream().map(operationVisitor::visit)
             );
         }
     }
@@ -131,7 +131,7 @@ public class Parser {
             var roleVisitor = new RoleVisitor();
             return new Aggregation(
                     ctx.container().accept(roleVisitor),
-                    ctx.part().stream().map(roleVisitor::visit)
+                    ctx.part().parallelStream().map(roleVisitor::visit)
             );
         }
     }
@@ -141,7 +141,7 @@ public class Parser {
         public Generalization visitGeneralization(GeneralizationContext ctx) {
             return new Generalization(
                     ctx.ID().getText(),
-                    ctx.subclass().stream().map(ParseTree::getText)
+                    ctx.subclass().parallelStream().map(ParseTree::getText)
             );
         }
     }
@@ -151,7 +151,7 @@ public class Parser {
         public Operation visitOperation(OperationContext ctx) {
             return new Operation(
                     ctx.ID().getText(),
-                    ctx.argument().stream().map(arg ->
+                    ctx.argument().parallelStream().map(arg ->
                             new Argument(arg.ID().getText(), arg.type().getText())
                     ),
                     ctx.type().getText()

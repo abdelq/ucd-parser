@@ -16,6 +16,6 @@ public class Aggregation implements Declaration {
 
     @Override
     public String toString() {
-        return String.format("%s - %s", container, parts);
+        return container + " - " + parts; // XXX
     }
 }
