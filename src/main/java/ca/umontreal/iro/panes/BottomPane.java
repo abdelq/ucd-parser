@@ -7,13 +7,13 @@ import javafx.scene.layout.VBox;
 
 public class BottomPane extends VBox {
     /**
-     * Detail section of the GUI
+     * Detail section of the GUI.
      */
     static final TextArea details = new TextArea();
 
     public BottomPane() {
         details.setEditable(false);
-        details.setMinHeight(128); // XXX
+        details.setPrefRowCount(25);
 
         getChildren().addAll(new Label("Détails"), details);
         setPadding(new Insets(8));

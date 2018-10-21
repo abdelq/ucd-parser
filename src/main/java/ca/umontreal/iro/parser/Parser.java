@@ -5,20 +5,23 @@ import ca.umontreal.iro.UCDLexer;
 import ca.umontreal.iro.UCDParser;
 import ca.umontreal.iro.UCDParser.*;
 import ca.umontreal.iro.parser.tree.*;
-import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.File;
 import java.io.IOException;
 
+import static ca.umontreal.iro.parser.tree.Multiplicity.valueOf;
+import static org.antlr.v4.runtime.CharStreams.fromFileName;
+import static org.antlr.v4.runtime.CharStreams.fromString;
+
 public class Parser {
     /**
      * Error listener for use by the parser.
      */
-    private BaseErrorListener errorListener;
+    private ANTLRErrorListener errorListener;
 
     public Parser() {
         errorListener = AlertErrorListener.INSTANCE;
@@ -27,7 +30,7 @@ public class Parser {
     /**
      * @param listener error listener
      */
-    public Parser(BaseErrorListener listener) {
+    public Parser(ANTLRErrorListener listener) {
         errorListener = listener;
     }
 
@@ -37,18 +40,14 @@ public class Parser {
      * @param stream source of characters for the lexer
      * @return use case model
      */
-    private Model parseModel(CharStream stream) throws Exception {
-        UCDLexer lexer = new UCDLexer(stream);
-        UCDParser parser = new UCDParser(new CommonTokenStream(lexer));
+    private Model parseModel(CharStream stream) {
+        var lexer = new UCDLexer(stream);
+        var parser = new UCDParser(new CommonTokenStream(lexer));
 
         parser.removeErrorListeners();
         parser.addErrorListener(errorListener);
 
-        Model model = new ModelVisitor().visit(parser.model());
-        if (parser.getNumberOfSyntaxErrors() > 0)
-            throw new Exception(); // XXX
-
-        return model;
+        return new ModelVisitor().visit(parser.model());
     }
 
     /**
@@ -56,10 +55,10 @@ public class Parser {
      *
      * @param file file to parse
      * @return use case model
-     * @throws IOException if an input or output exception occured
+     * @throws IOException if an input or output exception occurred
      */
-    public Model parseModel(File file) throws Exception {
-        return parseModel(CharStreams.fromFileName(file.getPath()));
+    public Model parseModel(File file) throws IOException {
+        return parseModel(fromFileName(file.getPath()));
     }
 
     /**
@@ -68,14 +67,14 @@ public class Parser {
      * @param string string to parse
      * @return use case model
      */
-    public Model parseModel(String string) throws Exception {
-        return parseModel(CharStreams.fromString(string));
+    public Model parseModel(String string) {
+        return parseModel(fromString(string));
     }
 
     private class ModelVisitor extends UCDBaseVisitor<Model> {
         @Override
         public Model visitModel(ModelContext ctx) {
-            DeclarationVisitor declarationVisitor = new DeclarationVisitor();
+            var declarationVisitor = new DeclarationVisitor();
             return new Model(
                     ctx.ID().getText(),
                     ctx.declaration().stream().map(declarationVisitor::visit)
@@ -86,14 +85,16 @@ public class Parser {
     private class DeclarationVisitor extends UCDBaseVisitor<Declaration> {
         @Override
         public Declaration visitDeclaration(DeclarationContext ctx) {
-            if (ctx.classDecl() != null)
-                return ctx.classDecl().accept(new ClassDeclVisitor());
-            else if (ctx.association() != null)
-                return ctx.association().accept(new AssociationVisitor());
-            else if (ctx.aggregation() != null)
-                return ctx.aggregation().accept(new AggregationVisitor());
-            else if (ctx.generalization() != null)
-                return ctx.generalization().accept(new GeneralizationVisitor());
+            ParseTree tree;
+            if ((tree = ctx.classDecl()) != null) {
+                return new ClassDeclVisitor().visit(tree);
+            } else if ((tree = ctx.association()) != null) {
+                return new AssociationVisitor().visit(tree);
+            } else if ((tree = ctx.aggregation()) != null) {
+                return new AggregationVisitor().visit(tree);
+            } else if ((tree = ctx.generalization()) != null) {
+                return new GeneralizationVisitor().visit(tree);
+            }
             return null;
         }
     }
@@ -101,7 +102,7 @@ public class Parser {
     private class ClassDeclVisitor extends UCDBaseVisitor<ClassDecl> {
         @Override
         public ClassDecl visitClassDecl(ClassDeclContext ctx) {
-            OperationVisitor operationVisitor = new OperationVisitor();
+            var operationVisitor = new OperationVisitor();
             return new ClassDecl(
                     ctx.ID().getText(),
                     ctx.attribute().stream().map(attr ->
@@ -115,7 +116,7 @@ public class Parser {
     private class AssociationVisitor extends UCDBaseVisitor<Association> {
         @Override
         public Association visitAssociation(AssociationContext ctx) {
-            RoleVisitor roleVisitor = new RoleVisitor();
+            var roleVisitor = new RoleVisitor();
             return new Association(
                     ctx.ID().getText(),
                     ctx.role(0).accept(roleVisitor),
@@ -127,9 +128,9 @@ public class Parser {
     private class AggregationVisitor extends UCDBaseVisitor<Aggregation> {
         @Override
         public Aggregation visitAggregation(AggregationContext ctx) {
-            RoleVisitor roleVisitor = new RoleVisitor();
+            var roleVisitor = new RoleVisitor();
             return new Aggregation(
-                    ctx.container.accept(roleVisitor),
+                    ctx.container().accept(roleVisitor),
                     ctx.part().stream().map(roleVisitor::visit)
             );
         }
@@ -163,7 +164,7 @@ public class Parser {
         public Role visitRole(RoleContext ctx) {
             return new Role(
                     ctx.ID().getText(),
-                    Multiplicity.valueOf(ctx.multiplicity().getText())
+                    valueOf(ctx.multiplicity().getText())
             );
         }
     }

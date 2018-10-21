@@ -1,29 +1,38 @@
 package ca.umontreal.iro.panes;
 
+import ca.umontreal.iro.metrics.Metric;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import static javafx.scene.control.Alert.AlertType;
+
 public class RightPane extends VBox {
     /**
-     * Detail section of the GUI
+     * Metrics section of the GUI.
      */
+    static final ListView<Metric> metrics = new ListView<>();
+    /**
+     * Information dialog about the selected metric.
+     */
+    private final Alert alert = new Alert(AlertType.INFORMATION);
+
     public RightPane() {
-        // XXX No need for button to calculate the metrics, just auto calculate them
-        // XXX Revoir padding pis le fait que RightPane et LeftPane sont des VBox et leurs enfants
-        Separator separator = new Separator(Orientation.VERTICAL);
-        separator.setPadding(new Insets(0, 8, 0, 0));
+        metrics.setOnMouseClicked(event -> {
+            var metric = metrics.getSelectionModel().getSelectedItem();
+            if (event.getClickCount() == 2 && metric != null) {
+                alert.setTitle(metric.getClass().getSimpleName());
+                alert.setHeaderText(metric.getName());
+                alert.setContentText(metric.getDescription());
+                alert.show();
+            }
+        });
+        setVgrow(metrics, Priority.ALWAYS);
 
-        HBox hBox = new HBox(separator, new ListView<String>());
-        setVgrow(hBox, Priority.ALWAYS);
-
-        getChildren().addAll(new Label("Métriques"), hBox);
-        setPadding(new Insets(8, 0, 8, 0));
+        getChildren().addAll(new Label("Métriques"), metrics);
+        setPadding(new Insets(8));
     }
 }

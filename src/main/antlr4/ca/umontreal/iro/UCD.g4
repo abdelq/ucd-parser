@@ -2,10 +2,10 @@ grammar UCD;
 
 model : 'MODEL' ID declaration* ;
 
-declaration : ( classDecl | association | aggregation | generalization ) ';' ;
+declaration : ( classDeclaration | association | aggregation | generalization ) ';' ;
 
-classDecl : 'CLASS' ID 'ATTRIBUTES' (attribute (',' attribute)*)?
-                       'OPERATIONS' (operation (',' operation)*)? ;
+classDeclaration : 'CLASS' ID 'ATTRIBUTES' (attribute (',' attribute)*)?
+                              'OPERATIONS' (operation (',' operation)*)? ;
 
 attribute : ID ':' type ;
 
@@ -17,8 +17,10 @@ type : ID ;
 
 association : 'RELATION' ID 'ROLES' role ',' role ;
 
-aggregation : 'AGGREGATION' 'CONTAINER' container=role
+aggregation : 'AGGREGATION' 'CONTAINER' container
                             'PARTS' part (',' part)* ;
+
+container : role ;
 
 part : role ;
 

@@ -12,7 +12,11 @@ public class App extends Application {
     /**
      * Current use case model.
      */
-    public static Model model;
+    private static Model model;
+    /**
+     * Primary stage.
+     */
+    private static Stage stage;
 
     public static void main(String[] args) {
         launch(args);
@@ -20,13 +24,35 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Parseur UCD");
+        stage = primaryStage;
 
-        primaryStage.setScene(new Scene(new BorderPane(
-            new VBox(new CenterPane(), new BottomPane()),
-            new TopPane(), new RightPane(), null, new LeftPane()
+        stage.setTitle("UCD Parser");
+        stage.setScene(new Scene(new BorderPane(
+                new VBox(new CenterPane(), new BottomPane()),
+                new TopPane(), new RightPane(), null, new LeftPane()
         )));
+        stage.show();
+    }
 
-        primaryStage.show();
+    /**
+     * TODO
+     *
+     * @return
+     */
+    public static Model getModel() {
+        return model;
+    }
+
+    /**
+     * TODO
+     *
+     * @param model
+     */
+    public static void setModel(Model model) {
+        if ((App.model = model) != null) {
+            stage.setTitle(model.id + " - UCD Parser");
+        } else {
+            stage.setTitle("UCD Parser");
+        }
     }
 }

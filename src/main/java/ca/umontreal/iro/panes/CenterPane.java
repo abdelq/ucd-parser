@@ -13,41 +13,41 @@ import javafx.scene.layout.VBox;
 
 public class CenterPane extends GridPane {
     /**
-     * Attribute section of the GUI
+     * Attribute section of the GUI.
      */
-    public static final ListView<Attribute> attributes = new ListView<>();
+    static final ListView<Attribute> attributes = new ListView<>();
     /**
-     * Operation section of the GUI
+     * Operation section of the GUI.
      */
-    public static final ListView<Operation> operations = new ListView<>();
+    static final ListView<Operation> operations = new ListView<>();
     /**
-     * Association section of the GUI
+     * Association section of the GUI.
      */
     static final ListView<Association> associations = new ListView<>();
     /**
-     * Aggregation section of the GUI
+     * Aggregation section of the GUI.
      */
     static final ListView<Aggregation> aggregations = new ListView<>();
 
     public CenterPane() {
-        VBox attributesBox = new VBox(new Label("Attributs"), attributes);
+        var attributesBox = new VBox(new Label("Attributs"), attributes);
         add(attributesBox, 0, 0);
         setHgrow(attributesBox, Priority.ALWAYS);
 
-        VBox operationsBox = new VBox(new Label("Méthodes"), operations);
+        var operationsBox = new VBox(new Label("Méthodes"), operations);
         add(operationsBox, 1, 0);
         setHgrow(operationsBox, Priority.ALWAYS);
 
-        VBox associationsBox = new VBox(new Label("Associations"), associations);
+        var associationsBox = new VBox(new Label("Associations"), associations);
         add(associationsBox, 0, 1);
         setHgrow(associationsBox, Priority.ALWAYS);
 
-        VBox aggregationsBox = new VBox(new Label("Aggrégations"), aggregations);
+        var aggregationsBox = new VBox(new Label("Aggrégations"), aggregations);
         add(aggregationsBox, 1, 1);
         setHgrow(aggregationsBox, Priority.ALWAYS);
 
         setHgap(8);
         setVgap(8);
-        setPadding(new Insets(8));
+        setPadding(new Insets(8, 0, 0, 0));
     }
 }
