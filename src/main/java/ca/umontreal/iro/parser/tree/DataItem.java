@@ -1,5 +1,7 @@
 package ca.umontreal.iro.parser.tree;
 
+import static java.lang.String.format;
+
 public class DataItem {
     public final String id;
     public final String type;
@@ -11,6 +13,6 @@ public class DataItem {
 
     @Override
     public String toString() {
-        return type + " " + id;
+        return format("%s %s", type, id);
     }
 }

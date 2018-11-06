@@ -3,6 +3,7 @@ package ca.umontreal.iro.parser.tree;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 public class Aggregation implements Declaration {
@@ -16,6 +17,6 @@ public class Aggregation implements Declaration {
 
     @Override
     public String toString() {
-        return container + " - " + parts;
+        return format("%s - %s", container, parts);
     }
 }

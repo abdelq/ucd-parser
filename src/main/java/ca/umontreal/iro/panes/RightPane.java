@@ -24,8 +24,7 @@ public class RightPane extends VBox {
         metrics.setOnMouseClicked(event -> {
             var metric = metrics.getSelectionModel().getSelectedItem();
             if (event.getClickCount() == 2 && metric != null) {
-                alert.setTitle(metric.getClass().getSimpleName());
-                alert.setHeaderText(metric.getName());
+                alert.setHeaderText(metric.getClass().getSimpleName());
                 alert.setContentText(metric.getDescription());
                 alert.show();
             }

@@ -8,6 +8,12 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
+import static java.lang.String.format;
+import static java.lang.System.lineSeparator;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static javafx.application.Platform.exit;
 import static javafx.scene.control.Alert.AlertType;
@@ -28,12 +34,6 @@ public class TopPane extends MenuBar {
     private final Alert alert = new Alert(AlertType.ERROR);
 
     public TopPane() {
-        fileChooser.setTitle("Open File");
-        fileChooser.getExtensionFilters().addAll(
-                new ExtensionFilter("UCD Files", "*.ucd"),
-                new ExtensionFilter("All Files", "*.*")
-        );
-
         getMenus().addAll(createFileMenu(), createMetricsMenu());
     }
 
@@ -66,6 +66,12 @@ public class TopPane extends MenuBar {
      */
     private void open() {
         // Open the dialog
+        fileChooser.setTitle("Open File");
+        fileChooser.getExtensionFilters().setAll(
+                new ExtensionFilter("UCD Files", "*.ucd"),
+                new ExtensionFilter("All Files", "*.*")
+        );
+
         var file = fileChooser.showOpenDialog(getScene().getWindow());
         if (file == null) {
             return;
@@ -84,15 +90,15 @@ public class TopPane extends MenuBar {
         }
 
         // Generate the hierarchy tree of classes
-        var treeItems = model.classes.map(TreeItem::new).collect(toList());
+        var treeItems = model.getClasses().map(decl -> decl.treeItem).collect(toList());
 
-        model.generalizations.forEach(gen -> {
-            var children = treeItems.parallelStream().filter(item ->
+        model.getGeneralizations().forEach(gen -> {
+            var children = treeItems.stream().filter(item ->
                     gen.subclasses.contains(item.getValue().id)
             ).collect(toList());
             treeItems.removeIf(children::contains);
 
-            var parent = treeItems.parallelStream().filter(item ->
+            var parent = treeItems.stream().filter(item ->
                     classExists(gen.id, item)
             ).findAny().get(); // XXX
             parent.setExpanded(true);
@@ -109,7 +115,7 @@ public class TopPane extends MenuBar {
     /**
      * Recursive lookup for an identifier in a tree of class declarations.
      *
-     * @param id identifier to look for
+     * @param id   identifier to look for
      * @param item tree item to look in
      * @return if a class declaration with the identifier exists
      */
@@ -118,7 +124,7 @@ public class TopPane extends MenuBar {
             return true;
         }
 
-        return item.getChildren().parallelStream().anyMatch(child -> classExists(id, child));
+        return item.getChildren().stream().anyMatch(child -> classExists(id, child));
     }
 
     /**
@@ -149,6 +155,28 @@ public class TopPane extends MenuBar {
      * Generates a CSV file with metrics for each class.
      */
     private void export() {
-        //App.getModel().classes.map(decl -> decl.id + "," + decl.getMetrics()); // TODO
+        fileChooser.setTitle("Save File");
+        fileChooser.getExtensionFilters().setAll(
+                new ExtensionFilter("CSV Files", "*.csv")
+        );
+
+        var file = fileChooser.showSaveDialog(getScene().getWindow());
+        if (file != null) {
+            try {
+                var writer = new BufferedWriter(new FileWriter(file));
+                writer.write(App.getModel().getClasses().map(decl ->
+                        decl.id + "," + decl.getMetrics().stream().map(metric -> {
+                            if (metric.getValue() instanceof Double)
+                                return format("%.2f", metric.getValue()); // XXX
+                            return metric.getValue().toString();
+                        }).collect(joining(","))
+                ).collect(joining(lineSeparator())));
+                writer.close();
+            } catch (Exception e) {
+                alert.setHeaderText(file.getName());
+                alert.setContentText(e.getMessage());
+                alert.show();
+            }
+        }
     }
 }

@@ -1,5 +1,7 @@
 package ca.umontreal.iro.parser.tree;
 
+import static java.lang.String.format;
+
 public class Role {
     public final String id;
     private final Multiplicity multiplicity;
@@ -11,6 +13,6 @@ public class Role {
 
     @Override
     public String toString() {
-        return id + " " + multiplicity;
+        return format("%s %s", id, multiplicity);
     }
 }

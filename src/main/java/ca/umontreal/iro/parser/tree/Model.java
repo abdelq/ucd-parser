@@ -1,21 +1,49 @@
 package ca.umontreal.iro.parser.tree;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class Model {
     public final String id;
 
-    public Stream<ClassDeclaration> classes;
-    public Stream<Generalization> generalizations;
-    Stream<Association> associations;
-    Stream<Aggregation> aggregations;
+    private List<ClassDeclaration> classes = new ArrayList<>();
+    private List<Generalization> generalizations = new ArrayList<>();
+    private List<Association> associations = new ArrayList<>();
+    private List<Aggregation> aggregations = new ArrayList<>();
 
     public Model(String id, Stream<Declaration> declarations) {
         this.id = id;
 
-        classes = declarations.filter(ClassDeclaration.class::isInstance).map(ClassDeclaration.class::cast);
-        generalizations = declarations.filter(Generalization.class::isInstance).map(Generalization.class::cast);
-        associations = declarations.filter(Association.class::isInstance).map(Association.class::cast);
-        aggregations = declarations.filter(Aggregation.class::isInstance).map(Aggregation.class::cast);
+        declarations.forEach(decl -> {
+            if (decl instanceof ClassDeclaration) {
+                classes.add((ClassDeclaration) decl);
+            } else if (decl instanceof Generalization) {
+                generalizations.add((Generalization) decl);
+            } else if (decl instanceof Association) {
+                associations.add((Association) decl);
+            } else if (decl instanceof Aggregation) {
+                aggregations.add((Aggregation) decl);
+            }
+        });
+    }
+
+    public Stream<ClassDeclaration> getClasses() {
+        return classes.stream();
+    }
+
+
+    public Stream<Generalization> getGeneralizations() {
+        return generalizations.stream();
+    }
+
+
+    public Stream<Association> getAssociations() {
+        return associations.stream();
+    }
+
+
+    public Stream<Aggregation> getAggregations() {
+        return aggregations.stream();
     }
 }

@@ -77,7 +77,7 @@ public class Parser {
             var declarationVisitor = new DeclarationVisitor();
             return new Model(
                     ctx.ID().getText(),
-                    ctx.declaration().parallelStream().map(declarationVisitor::visit)
+                    ctx.declaration().stream().map(declarationVisitor::visit)
             );
         }
     }
@@ -105,10 +105,10 @@ public class Parser {
             var operationVisitor = new OperationVisitor();
             return new ClassDeclaration(
                     ctx.ID().getText(),
-                    ctx.attribute().parallelStream().map(attr ->
+                    ctx.attribute().stream().map(attr ->
                             new Attribute(attr.ID().getText(), attr.type().getText())
                     ),
-                    ctx.operation().parallelStream().map(operationVisitor::visit)
+                    ctx.operation().stream().map(operationVisitor::visit)
             );
         }
     }
@@ -131,7 +131,7 @@ public class Parser {
             var roleVisitor = new RoleVisitor();
             return new Aggregation(
                     ctx.container().accept(roleVisitor),
-                    ctx.part().parallelStream().map(roleVisitor::visit)
+                    ctx.part().stream().map(roleVisitor::visit)
             );
         }
     }
@@ -141,7 +141,7 @@ public class Parser {
         public Generalization visitGeneralization(GeneralizationContext ctx) {
             return new Generalization(
                     ctx.ID().getText(),
-                    ctx.subclass().parallelStream().map(ParseTree::getText)
+                    ctx.subclass().stream().map(ParseTree::getText)
             );
         }
     }
@@ -151,7 +151,7 @@ public class Parser {
         public Operation visitOperation(OperationContext ctx) {
             return new Operation(
                     ctx.ID().getText(),
-                    ctx.argument().parallelStream().map(arg ->
+                    ctx.argument().stream().map(arg ->
                             new Argument(arg.ID().getText(), arg.type().getText())
                     ),
                     ctx.type().getText()

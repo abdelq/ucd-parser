@@ -20,11 +20,11 @@ public class Operation {
 
     @Override
     public String toString() {
-        var args = arguments.parallelStream().map(DataItem::toString).collect(toList());
+        var args = arguments.stream().map(DataItem::toString).collect(toList());
         return format("%s %s(%s)", type, id, join(", ", args));
     }
 
     String details() {
-        return format("    %s(%s) : %s", id, join(", ", arguments.parallelStream().map(Argument::details).collect(toList())), type);
+        return format("    %s(%s) : %s", id, join(", ", arguments.stream().map(Argument::details).collect(toList())), type);
     }
 }

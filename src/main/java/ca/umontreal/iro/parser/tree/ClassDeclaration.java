@@ -2,6 +2,7 @@ package ca.umontreal.iro.parser.tree;
 
 import ca.umontreal.iro.App;
 import ca.umontreal.iro.metrics.*;
+import javafx.scene.control.TreeItem;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,10 +22,14 @@ public class ClassDeclaration implements Declaration {
     private StringBuilder details;
     private List<Metric> metrics;
 
+    public TreeItem<ClassDeclaration> treeItem;
+
     public ClassDeclaration(String id, Stream<Attribute> attributes, Stream<Operation> operations) {
         this.id = id;
         this.attributes = attributes.collect(toList());
         this.operations = operations.collect(toList());
+
+        this.treeItem = new TreeItem<>(this);
     }
 
     @Override
@@ -42,7 +47,7 @@ public class ClassDeclaration implements Declaration {
 
     public List<Association> getAssociations() {
         if (associations == null) {
-            associations = App.getModel().associations.filter(asso ->
+            associations = App.getModel().getAssociations().filter(asso ->
                     asso.firstRole.id.equals(id) || asso.secondRole.id.equals(id)
             ).collect(toList());
         }
@@ -51,8 +56,8 @@ public class ClassDeclaration implements Declaration {
 
     public List<Aggregation> getAggregations() {
         if (aggregations == null) {
-            aggregations = App.getModel().aggregations.filter(aggr ->
-                    aggr.container.id.equals(id) || aggr.parts.parallelStream().anyMatch(part -> part.id.equals(id))
+            aggregations = App.getModel().getAggregations().filter(aggr ->
+                    aggr.container.id.equals(id) || aggr.parts.stream().anyMatch(part -> part.id.equals(id))
             ).collect(toList());
         }
         return aggregations;
@@ -66,7 +71,7 @@ public class ClassDeclaration implements Declaration {
 
             details.append("ATTRIBUTES").append(lineSeparator()).append(join(
                     "," + lineSeparator(),
-                    attributes.parallelStream().map(Attribute::details).collect(toList())
+                    attributes.stream().map(Attribute::details).collect(toList())
             ));
             if (attributes.size() > 0) {
                 details.append(lineSeparator());
@@ -74,7 +79,7 @@ public class ClassDeclaration implements Declaration {
 
             details.append("OPERATIONS").append(lineSeparator()).append(join(
                     "," + lineSeparator(),
-                    operations.parallelStream().map(Operation::details).collect(toList())
+                    operations.stream().map(Operation::details).collect(toList())
             ));
             if (operations.size() > 0) {
                 details.append(lineSeparator());
