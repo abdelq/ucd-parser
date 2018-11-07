@@ -3,6 +3,9 @@ package ca.umontreal.iro.metrics;
 import ca.umontreal.iro.parser.tree.ClassDeclaration;
 import javafx.scene.control.TreeItem;
 
+import java.util.List;
+import java.util.stream.IntStream;
+
 import static java.lang.String.format;
 
 public class CLD implements Metric {
@@ -13,12 +16,12 @@ public class CLD implements Metric {
     }
 
     private int maxDepth(TreeItem<ClassDeclaration> treeItem) {
-        var children = treeItem.getChildren();
+        List<TreeItem<ClassDeclaration>> children = treeItem.getChildren();
         if (children.size() == 0) {
             return 0;
         }
 
-        var depths = children.stream().mapToInt(this::maxDepth);
+        IntStream depths = children.parallelStream().mapToInt(this::maxDepth);
         return depths.max().getAsInt() + 1; // XXX
     }
 

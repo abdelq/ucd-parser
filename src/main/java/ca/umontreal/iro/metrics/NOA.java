@@ -1,6 +1,7 @@
 package ca.umontreal.iro.metrics;
 
 import ca.umontreal.iro.parser.tree.ClassDeclaration;
+import javafx.scene.control.TreeItem;
 
 import static java.lang.String.format;
 
@@ -10,7 +11,7 @@ public class NOA implements Metric {
     public NOA(ClassDeclaration declaration) {
         metric = declaration.getAttributes().size(); // Locaux
 
-        var item = declaration.treeItem;
+        TreeItem<ClassDeclaration> item = declaration.treeItem;
         while ((item = item.getParent()) != null) {
             if (item.getValue() != null) {
                 metric += item.getValue().getAttributes().size(); // Hérités

@@ -20,7 +20,7 @@ public class Operation {
 
     @Override
     public String toString() {
-        var args = arguments.stream().map(DataItem::toString).collect(toList());
+        List<String> args = arguments.stream().map(DataItem::toString).collect(toList());
         return format("%s %s(%s)", type, id, join(", ", args));
     }
 

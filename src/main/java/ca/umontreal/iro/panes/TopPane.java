@@ -9,7 +9,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.lang.System.lineSeparator;
@@ -43,17 +45,17 @@ public class TopPane extends MenuBar {
      * @return file menu
      */
     private Menu createFileMenu() {
-        var openItem = new MenuItem("Ouvrir");
+        MenuItem openItem = new MenuItem("Ouvrir");
         openItem.setAccelerator(keyCombination("Ctrl+O"));
         openItem.setOnAction(e -> open());
 
-        var clearItem = new MenuItem("Fermer");
+        MenuItem clearItem = new MenuItem("Fermer");
         clearItem.setAccelerator(keyCombination("Ctrl+W"));
         clearItem.setOnAction(e -> close());
 
-        var separatorItem = new SeparatorMenuItem();
+        SeparatorMenuItem separatorItem = new SeparatorMenuItem();
 
-        var exitItem = new MenuItem("Quitter");
+        MenuItem exitItem = new MenuItem("Quitter");
         exitItem.setAccelerator(keyCombination("Ctrl+Q"));
         exitItem.setOnAction(e -> exit());
 
@@ -72,7 +74,7 @@ public class TopPane extends MenuBar {
                 new ExtensionFilter("All Files", "*.*")
         );
 
-        var file = fileChooser.showOpenDialog(getScene().getWindow());
+        File file = fileChooser.showOpenDialog(getScene().getWindow());
         if (file == null) {
             return;
         }
@@ -90,15 +92,15 @@ public class TopPane extends MenuBar {
         }
 
         // Generate the hierarchy tree of classes
-        var treeItems = model.getClasses().map(decl -> decl.treeItem).collect(toList());
+        List<TreeItem<ClassDeclaration>> treeItems = model.getClasses().map(decl -> decl.treeItem).collect(toList());
 
         model.getGeneralizations().forEach(gen -> {
-            var children = treeItems.stream().filter(item ->
+            List<TreeItem<ClassDeclaration>> children = treeItems.stream().filter(item ->
                     gen.subclasses.contains(item.getValue().id)
             ).collect(toList());
             treeItems.removeIf(children::contains);
 
-            var parent = treeItems.stream().filter(item ->
+            TreeItem<ClassDeclaration> parent = treeItems.stream().filter(item ->
                     classExists(gen.id, item)
             ).findAny().get(); // XXX
             parent.setExpanded(true);
@@ -145,7 +147,7 @@ public class TopPane extends MenuBar {
      * @return metrics menu
      */
     private Menu createMetricsMenu() {
-        var exportItem = new MenuItem("Exporter");
+        MenuItem exportItem = new MenuItem("Exporter");
         exportItem.setOnAction(e -> export());
 
         return new Menu("Métriques", null, exportItem);
@@ -160,10 +162,10 @@ public class TopPane extends MenuBar {
                 new ExtensionFilter("CSV Files", "*.csv")
         );
 
-        var file = fileChooser.showSaveDialog(getScene().getWindow());
+        File file = fileChooser.showSaveDialog(getScene().getWindow());
         if (file != null) {
             try {
-                var writer = new BufferedWriter(new FileWriter(file));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(file));
                 writer.write(App.getModel().getClasses().map(decl ->
                         decl.id + "," + decl.getMetrics().stream().map(metric -> {
                             if (metric.getValue() instanceof Double)

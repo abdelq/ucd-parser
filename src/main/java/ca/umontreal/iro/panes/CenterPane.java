@@ -30,19 +30,19 @@ public class CenterPane extends GridPane {
     static final ListView<Aggregation> aggregations = new ListView<>();
 
     public CenterPane() {
-        var attributesBox = new VBox(new Label("Attributs"), attributes);
+        VBox attributesBox = new VBox(new Label("Attributs"), attributes);
         add(attributesBox, 0, 0);
         setHgrow(attributesBox, Priority.ALWAYS);
 
-        var operationsBox = new VBox(new Label("Méthodes"), operations);
+        VBox operationsBox = new VBox(new Label("Méthodes"), operations);
         add(operationsBox, 1, 0);
         setHgrow(operationsBox, Priority.ALWAYS);
 
-        var associationsBox = new VBox(new Label("Associations"), associations);
+        VBox associationsBox = new VBox(new Label("Associations"), associations);
         add(associationsBox, 0, 1);
         setHgrow(associationsBox, Priority.ALWAYS);
 
-        var aggregationsBox = new VBox(new Label("Aggrégations"), aggregations);
+        VBox aggregationsBox = new VBox(new Label("Aggrégations"), aggregations);
         add(aggregationsBox, 1, 1);
         setHgrow(aggregationsBox, Priority.ALWAYS);
 

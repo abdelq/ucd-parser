@@ -1,6 +1,7 @@
 package ca.umontreal.iro.metrics;
 
 import ca.umontreal.iro.parser.tree.ClassDeclaration;
+import javafx.scene.control.TreeItem;
 
 import static java.lang.String.format;
 
@@ -8,7 +9,7 @@ public class DIT implements Metric {
     public int metric;
 
     public DIT(ClassDeclaration declaration) {
-        var item = declaration.treeItem;
+        TreeItem<ClassDeclaration> item = declaration.treeItem;
         while ((item = item.getParent()) != null) {
             metric += 1; // XXX Possibly wrong because of the tree root
         }

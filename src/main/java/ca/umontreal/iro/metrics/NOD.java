@@ -2,6 +2,9 @@ package ca.umontreal.iro.metrics;
 
 import ca.umontreal.iro.parser.tree.ClassDeclaration;
 import javafx.scene.control.TreeItem;
+import jdk.nashorn.api.tree.Tree;
+
+import java.util.List;
 
 import static java.lang.String.format;
 
@@ -13,11 +16,8 @@ public class NOD implements Metric {
     }
 
     private int numChildren(TreeItem<ClassDeclaration> treeItem) {
-        var children = treeItem.getChildren();
-        /*if (children.size() == 0) {
-            return 0;
-        }*/
-        return children.size() + children.stream().mapToInt(this::numChildren).sum(); // XXX
+        List<TreeItem<ClassDeclaration>> children = treeItem.getChildren();
+        return children.size() + children.parallelStream().mapToInt(this::numChildren).sum(); // XXX
     }
 
     public String getDescription() {

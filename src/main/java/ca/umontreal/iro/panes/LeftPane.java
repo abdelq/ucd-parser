@@ -15,11 +15,11 @@ public class LeftPane extends VBox {
     static final TreeItem<ClassDeclaration> classes = new TreeItem<>();
 
     public LeftPane() {
-        var treeView = new TreeView<>(classes);
+        TreeView<ClassDeclaration> treeView = new TreeView<>(classes);
         treeView.setShowRoot(false);
         treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue != oldValue) {
-                var declaration = newValue.getValue();
+                ClassDeclaration declaration = newValue.getValue();
 
                 CenterPane.attributes.getItems().setAll(declaration.getAttributes());
                 CenterPane.operations.getItems().setAll(declaration.getOperations());

@@ -1,6 +1,7 @@
 package ca.umontreal.iro.metrics;
 
 import ca.umontreal.iro.parser.tree.ClassDeclaration;
+import javafx.scene.control.TreeItem;
 
 import static java.lang.String.format;
 
@@ -11,7 +12,7 @@ public class CAC implements Metric {
         metric = declaration.getAssociations().size() +
                  declaration.getAggregations().size(); // Locales
 
-        var item = declaration.treeItem;
+        TreeItem<ClassDeclaration> item = declaration.treeItem;
         while ((item = item.getParent()) != null) {
             if (item.getValue() != null) {
                 metric += item.getValue().getAssociations().size() +

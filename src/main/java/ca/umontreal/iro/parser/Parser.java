@@ -41,8 +41,8 @@ public class Parser {
      * @return use case model
      */
     private Model parseModel(CharStream stream) {
-        var lexer = new UCDLexer(stream);
-        var parser = new UCDParser(new CommonTokenStream(lexer));
+        UCDLexer lexer = new UCDLexer(stream);
+        UCDParser parser = new UCDParser(new CommonTokenStream(lexer));
 
         parser.removeErrorListeners();
         parser.addErrorListener(errorListener);
@@ -74,7 +74,7 @@ public class Parser {
     private class ModelVisitor extends UCDBaseVisitor<Model> {
         @Override
         public Model visitModel(ModelContext ctx) {
-            var declarationVisitor = new DeclarationVisitor();
+            DeclarationVisitor declarationVisitor = new DeclarationVisitor();
             return new Model(
                     ctx.ID().getText(),
                     ctx.declaration().stream().map(declarationVisitor::visit)
@@ -102,7 +102,7 @@ public class Parser {
     private class ClassDeclarationVisitor extends UCDBaseVisitor<ClassDeclaration> {
         @Override
         public ClassDeclaration visitClassDeclaration(ClassDeclarationContext ctx) {
-            var operationVisitor = new OperationVisitor();
+            OperationVisitor operationVisitor = new OperationVisitor();
             return new ClassDeclaration(
                     ctx.ID().getText(),
                     ctx.attribute().stream().map(attr ->
@@ -116,7 +116,7 @@ public class Parser {
     private class AssociationVisitor extends UCDBaseVisitor<Association> {
         @Override
         public Association visitAssociation(AssociationContext ctx) {
-            var roleVisitor = new RoleVisitor();
+            RoleVisitor roleVisitor = new RoleVisitor();
             return new Association(
                     ctx.ID().getText(),
                     ctx.role(0).accept(roleVisitor),
@@ -128,7 +128,7 @@ public class Parser {
     private class AggregationVisitor extends UCDBaseVisitor<Aggregation> {
         @Override
         public Aggregation visitAggregation(AggregationContext ctx) {
-            var roleVisitor = new RoleVisitor();
+            RoleVisitor roleVisitor = new RoleVisitor();
             return new Aggregation(
                     ctx.container().accept(roleVisitor),
                     ctx.part().stream().map(roleVisitor::visit)
