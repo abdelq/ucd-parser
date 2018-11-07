@@ -28,7 +28,7 @@ public class DataItem {
         }
         DataItem item = (DataItem) obj;
         return Objects.equals(id, item.id) &&
-               Objects.equals(type, item.type);
+                Objects.equals(type, item.type);
     }
 
     @Override

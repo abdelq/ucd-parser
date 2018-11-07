@@ -9,21 +9,17 @@ public class CAC implements Metric {
     public int metric;
 
     public CAC(ClassDeclaration declaration) {
-        metric = declaration.getAssociations().size() +
-                 declaration.getAggregations().size(); // Locales
-
-        TreeItem<ClassDeclaration> item = declaration.treeItem;
-        while ((item = item.getParent()) != null) {
-            if (item.getValue() != null) {
-                metric += item.getValue().getAssociations().size() +
-                        item.getValue().getAggregations().size(); // Héritées
-            }
+        TreeItem<ClassDeclaration> item = declaration.getTreeItem();
+        while (item != null && item.getValue() != null) {
+            metric += item.getValue().getAssociations().size() +
+                    item.getValue().getAggregations().size();
+            item = item.getParent();
         }
     }
 
     public String getDescription() {
-        return "Nombre d'associations (incluant les agrégations) locales/héritées " +
-                "auxquelles participe la classe.";
+        return "Nombre d'associations (incluant les agrégations) " +
+                "locales/héritées auxquelles participe la classe.";
     }
 
     public Number getValue() {

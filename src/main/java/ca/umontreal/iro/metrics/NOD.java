@@ -2,7 +2,6 @@ package ca.umontreal.iro.metrics;
 
 import ca.umontreal.iro.parser.tree.ClassDeclaration;
 import javafx.scene.control.TreeItem;
-import jdk.nashorn.api.tree.Tree;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public class NOD implements Metric {
     public int metric;
 
     public NOD(ClassDeclaration declaration) {
-        metric = numChildren(declaration.treeItem);
+        metric = numChildren(declaration.getTreeItem());
     }
 
     public String getDescription() {

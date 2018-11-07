@@ -9,11 +9,11 @@ public class DIT implements Metric {
     public int metric;
 
     public DIT(ClassDeclaration declaration) {
-        TreeItem<ClassDeclaration> item = declaration.treeItem;
-        while ((item = item.getParent()) != null) {
+        // The root of the hierarchy used in the left pane is excluded
+        TreeItem<ClassDeclaration> item = declaration.getTreeItem();
+        while ((item = item.getParent()) != null && item.getParent() != null) {
             metric += 1;
         }
-        metric -= 1;
     }
 
     public String getDescription() {

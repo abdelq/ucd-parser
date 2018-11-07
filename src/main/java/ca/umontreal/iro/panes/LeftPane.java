@@ -17,18 +17,19 @@ public class LeftPane extends VBox {
     public LeftPane() {
         TreeView<ClassDeclaration> treeView = new TreeView<>(classes);
         treeView.setShowRoot(false);
-        treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && newValue != oldValue) {
-                ClassDeclaration declaration = newValue.getValue();
+        treeView.getSelectionModel().selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    if (newValue != null && newValue != oldValue) {
+                        ClassDeclaration declaration = newValue.getValue();
 
-                CenterPane.attributes.getItems().setAll(declaration.getAttributes());
-                CenterPane.operations.getItems().setAll(declaration.getOperations());
-                CenterPane.associations.getItems().setAll(declaration.getAssociations());
-                CenterPane.aggregations.getItems().setAll(declaration.getAggregations());
-                RightPane.metrics.getItems().setAll(declaration.getMetrics());
-                BottomPane.details.setText(declaration.getDetails());
-            }
-        });
+                        CenterPane.attributes.getItems().setAll(declaration.getAttributes());
+                        CenterPane.operations.getItems().setAll(declaration.getOperations());
+                        CenterPane.associations.getItems().setAll(declaration.getAssociations());
+                        CenterPane.aggregations.getItems().setAll(declaration.getAggregations());
+                        RightPane.metrics.getItems().setAll(declaration.getMetrics());
+                        BottomPane.details.setText(declaration.getDetails());
+                    }
+                });
         setVgrow(treeView, Priority.ALWAYS);
 
         getChildren().addAll(new Label("Classes"), treeView);

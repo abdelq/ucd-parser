@@ -16,10 +16,10 @@ public class Aggregation implements Declaration {
     }
 
     /**
-     * TODO.
+     * Compares the class identifier for container and parts to another.
      *
      * @param id identifier to compare
-     * @return TODO
+     * @return if the identifier is present
      */
     boolean matches(String id) {
         return container.matches(id) ||

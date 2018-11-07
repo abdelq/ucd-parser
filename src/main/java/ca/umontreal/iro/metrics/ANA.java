@@ -11,7 +11,7 @@ public class ANA implements Metric {
 
     public ANA(ClassDeclaration declaration) {
         OptionalDouble avg = declaration.getOperations().parallelStream()
-                .mapToInt(op -> op.getArguments().size()).average();
+                .mapToLong(op -> op.getArguments().count()).average();
         if (avg.isPresent()) {
             metric = avg.getAsDouble();
         }

@@ -28,6 +28,8 @@ public class Parser {
     }
 
     /**
+     * Initializes a parser using a custom error listener.
+     *
      * @param listener error listener
      */
     public Parser(ANTLRErrorListener listener) {

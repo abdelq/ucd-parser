@@ -22,18 +22,6 @@ public class App extends Application {
         launch(args);
     }
 
-    @Override
-    public void start(Stage primaryStage) {
-        stage = primaryStage;
-
-        stage.setTitle("UCD Parser");
-        stage.setScene(new Scene(new BorderPane(
-                new VBox(new CenterPane(), new BottomPane()),
-                new TopPane(), new RightPane(), null, new LeftPane()
-        )));
-        stage.show();
-    }
-
     /**
      * Gets the current use case model.
      *
@@ -49,10 +37,21 @@ public class App extends Application {
      * @param model use case model
      */
     public static void setModel(Model model) {
-        if ((App.model = model) != null) {
-            stage.setTitle(model.getId() + " - UCD Parser");
-        } else {
-            stage.setTitle("UCD Parser");
+        App.model = model;
+        if (stage != null) {
+            stage.setTitle((model != null ? model.getId() + " - " : "") + "UCD Parser");
         }
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        stage = primaryStage;
+
+        stage.setTitle("UCD Parser");
+        stage.setScene(new Scene(new BorderPane(
+                new VBox(new CenterPane(), new BottomPane()),
+                new TopPane(), new RightPane(), null, new LeftPane()
+        )));
+        stage.show();
     }
 }

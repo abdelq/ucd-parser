@@ -2,12 +2,16 @@ package ca.umontreal.iro.metrics;
 
 public interface Metric {
     /**
+     * Description of the metric.
+     *
      * @return description of the metric
      */
     String getDescription();
 
     /**
-     * @return calculated value of the metric
+     * Calculated value of the metric.
+     *
+     * @return value of the metric
      */
     Number getValue();
 }

@@ -1,5 +1,6 @@
 package ca.umontreal.iro.metrics;
 
+import ca.umontreal.iro.parser.tree.Argument;
 import ca.umontreal.iro.parser.tree.ClassDeclaration;
 import ca.umontreal.iro.parser.tree.Operation;
 
@@ -12,10 +13,10 @@ public class ETC implements Metric {
 
     public ETC(ClassDeclaration declaration, Stream<ClassDeclaration> declarations) {
         Stream<ClassDeclaration> otherClasses = declarations.filter(decl -> decl != declaration);
-        Stream<String> arguments = otherClasses.flatMap(decl ->
-                decl.getOperations().parallelStream().flatMap(Operation::getArgumentsType)
+        Stream<Argument> arguments = otherClasses.flatMap(decl ->
+                decl.getOperations().parallelStream().flatMap(Operation::getArguments)
         );
-        metric = arguments.filter(arg -> arg.equals(declaration.id)).count();
+        metric = arguments.filter(arg -> arg.matches(declaration.getId())).count();
     }
 
     public String getDescription() {

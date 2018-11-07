@@ -1,6 +1,5 @@
 package ca.umontreal.iro.parser.tree;
 
-import ca.umontreal.iro.App;
 import ca.umontreal.iro.metrics.*;
 import javafx.scene.control.TreeItem;
 
@@ -8,13 +7,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.lang.String.join;
+import static ca.umontreal.iro.App.getModel;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class ClassDeclaration implements Declaration {
-    public final String id; // TODO Private
+    private final String id;
     private final List<Attribute> attributes;
     private final List<Operation> operations;
 
@@ -22,7 +21,7 @@ public class ClassDeclaration implements Declaration {
     private List<Aggregation> aggregations;
     private String details;
     private List<Metric> metrics;
-    public TreeItem<ClassDeclaration> treeItem; // TODO Private
+    private TreeItem<ClassDeclaration> treeItem;
 
     public ClassDeclaration(String id, Stream<Attribute> attributes, Stream<Operation> operations) {
         this.id = id;
@@ -30,6 +29,10 @@ public class ClassDeclaration implements Declaration {
         this.operations = operations.collect(toList());
 
         this.treeItem = new TreeItem<>(this);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public List<Attribute> getAttributes() {
@@ -42,14 +45,16 @@ public class ClassDeclaration implements Declaration {
 
     public List<Association> getAssociations() {
         if (associations == null) {
-            associations = App.getModel().getAssociations().filter(asso -> asso.matches(id)).collect(toList());
+            associations = getModel().getAssociations()
+                    .filter(asso -> asso.matches(id)).collect(toList());
         }
         return associations;
     }
 
     public List<Aggregation> getAggregations() {
         if (aggregations == null) {
-            aggregations = App.getModel().getAggregations().filter(aggr -> aggr.matches(id)).collect(toList());
+            aggregations = getModel().getAggregations()
+                    .filter(aggr -> aggr.matches(id)).collect(toList());
         }
         return aggregations;
     }
@@ -62,7 +67,7 @@ public class ClassDeclaration implements Declaration {
 
             builder.append("ATTRIBUTES").append(lineSeparator()).append(
                     attributes.stream().map(Attribute::details)
-                              .collect(joining("," + lineSeparator()))
+                            .collect(joining("," + lineSeparator()))
             );
             if (attributes.size() > 0) {
                 builder.append(lineSeparator());
@@ -70,7 +75,7 @@ public class ClassDeclaration implements Declaration {
 
             builder.append("OPERATIONS").append(lineSeparator()).append(
                     operations.stream().map(Operation::details)
-                              .collect(joining("," + lineSeparator()))
+                            .collect(joining("," + lineSeparator()))
             );
             if (operations.size() > 0) {
                 builder.append(lineSeparator());
@@ -86,20 +91,23 @@ public class ClassDeclaration implements Declaration {
     public List<Metric> getMetrics() {
         if (metrics == null) {
             metrics = Arrays.asList(new ANA(this), new NOM(this),
-                    new NOA(this), new ITC(this, App.getModel().getClasses()),
-                    new ETC(this, App.getModel().getClasses()), new CAC(this),
+                    new NOA(this), new ITC(this, getModel().getClasses()),
+                    new ETC(this, getModel().getClasses()), new CAC(this),
                     new DIT(this), new CLD(this),
                     new NOC(this), new NOD(this));
         }
         return metrics;
     }
 
+    public TreeItem<ClassDeclaration> getTreeItem() {
+        return treeItem;
+    }
 
     /**
-     * TODO.
+     * Compares the class identifier to another.
      *
      * @param id identifier to compare
-     * @return TODO
+     * @return if the two identifiers match
      */
     public boolean matches(String id) {
         return this.id.equals(id);

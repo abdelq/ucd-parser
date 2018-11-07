@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static java.lang.String.join;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
@@ -20,12 +19,8 @@ public class Operation {
         this.type = type;
     }
 
-    public List<Argument> getArguments() {
-        return arguments;
-    }
-
-    public Stream<String> getArgumentsType() {
-        return arguments.parallelStream().map(arg -> arg.type);
+    public Stream<Argument> getArguments() {
+        return arguments.parallelStream();
     }
 
     /**
@@ -34,13 +29,13 @@ public class Operation {
      * @return detail string for operation
      */
     String details() {
-        String args = arguments.stream().map(Argument::details).collect(joining(","));
+        String args = arguments.stream().map(Argument::details).collect(joining(", "));
         return format("    %s(%s) : %s", id, args, type);
     }
 
     @Override
     public String toString() {
-        String args = arguments.stream().map(Argument::toString).collect(joining(","));
+        String args = arguments.stream().map(Argument::toString).collect(joining(", "));
         return format("%s %s(%s)", type, id, args);
     }
 
@@ -54,8 +49,8 @@ public class Operation {
         }
         Operation op = (Operation) obj;
         return Objects.equals(id, op.id) &&
-               Objects.equals(type, op.type) &&
-               Objects.equals(arguments, op.arguments);
+                Objects.equals(type, op.type) &&
+                Objects.equals(arguments, op.arguments);
     }
 
     @Override

@@ -8,7 +8,7 @@ public class NOC implements Metric {
     public int metric;
 
     public NOC(ClassDeclaration declaration) {
-        metric = declaration.treeItem.getChildren().size();
+        metric = declaration.getTreeItem().getChildren().size();
     }
 
     public String getDescription() {

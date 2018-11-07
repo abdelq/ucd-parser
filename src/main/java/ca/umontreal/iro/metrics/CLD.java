@@ -5,7 +5,6 @@ import javafx.scene.control.TreeItem;
 
 import java.util.List;
 import java.util.OptionalInt;
-import java.util.stream.IntStream;
 
 import static java.lang.String.format;
 
@@ -13,7 +12,7 @@ public class CLD implements Metric {
     public int metric;
 
     public CLD(ClassDeclaration declaration) {
-        metric = maxDepth(declaration.treeItem);
+        metric = maxDepth(declaration.getTreeItem());
     }
 
     public String getDescription() {

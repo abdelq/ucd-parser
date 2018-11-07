@@ -14,10 +14,10 @@ public class Association implements Declaration {
     }
 
     /**
-     * TODO.
+     * Compares the class identifier for the association's roles to another.
      *
      * @param id identifier to compare
-     * @return TODO
+     * @return if the identifier is present
      */
     boolean matches(String id) {
         return firstRole.matches(id) || secondRole.matches(id);

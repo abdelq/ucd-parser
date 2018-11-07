@@ -9,13 +9,10 @@ public class NOA implements Metric {
     public int metric;
 
     public NOA(ClassDeclaration declaration) {
-        metric = declaration.getAttributes().size(); // Locaux
-
-        TreeItem<ClassDeclaration> item = declaration.treeItem;
-        while ((item = item.getParent()) != null) {
-            if (item.getValue() != null) {
-                metric += item.getValue().getAttributes().size(); // Hérités
-            }
+        TreeItem<ClassDeclaration> item = declaration.getTreeItem();
+        while (item != null && item.getValue() != null) {
+            metric += item.getValue().getAttributes().size();
+            item = item.getParent();
         }
     }
 

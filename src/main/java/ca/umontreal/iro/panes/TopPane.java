@@ -14,8 +14,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import static ca.umontreal.iro.App.getModel;
 import static java.lang.String.format;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
@@ -86,22 +86,29 @@ public class TopPane extends MenuBar {
         Model model;
         try {
             model = parser.parseModel(file);
-        } catch (Exception e) {
+        } catch (Exception ex) {
             alert.setHeaderText(file.getName());
-            alert.setContentText(e.getMessage());
+            alert.setContentText(ex.getMessage());
             alert.show();
 
             return;
         }
 
         // Generate the hierarchy tree of classes
-        List<TreeItem<ClassDeclaration>> treeItems = model.getClasses().map(decl -> decl.treeItem).collect(toList());
+        List<TreeItem<ClassDeclaration>> treeItems = model.getClasses()
+                .map(ClassDeclaration::getTreeItem).collect(toList());
 
         for (Generalization gen : model.getGeneralizations().collect(toList())) {
-            // TODO Match all children or throw error
             List<TreeItem<ClassDeclaration>> children = treeItems.stream().filter(item ->
-                    gen.getSubclasses().contains(item.getValue().id)
+                    gen.getSubclasses().contains(item.getValue().getId())
             ).collect(toList());
+            if (children.size() != gen.getSubclasses().size()) {
+                alert.setHeaderText(file.getName());
+                alert.setContentText("Could not find all children for parent class " + gen.getId());
+                alert.show();
+
+                return;
+            }
             treeItems.removeIf(children::contains);
 
             Optional<TreeItem<ClassDeclaration>> parent = treeItems.stream().filter(item ->
@@ -109,12 +116,11 @@ public class TopPane extends MenuBar {
             ).findAny();
             if (!parent.isPresent()) {
                 alert.setHeaderText(file.getName());
-                alert.setContentText("Could not find parent class" + gen.getId());
+                alert.setContentText("Could not find parent class " + gen.getId());
                 alert.show();
 
                 return;
             }
-
             parent.get().setExpanded(true);
             parent.get().getChildren().addAll(children);
         }
@@ -140,7 +146,6 @@ public class TopPane extends MenuBar {
         if (item.getValue().matches(id)) {
             return true;
         }
-
         return item.getChildren().parallelStream().anyMatch(child -> classExists(id, child));
     }
 
@@ -184,8 +189,8 @@ public class TopPane extends MenuBar {
         if (file != null) {
             try {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-                writer.write(App.getModel().getClasses().map(decl ->
-                        decl.id + "," + decl.getMetrics().stream().map(metric -> {
+                writer.write(getModel().getClasses().map(decl ->
+                        decl.getId() + "," + decl.getMetrics().stream().map(metric -> {
                             if (metric.getValue() instanceof Double) {
                                 return format("%.2f", metric.getValue().doubleValue());
                             }
@@ -193,9 +198,9 @@ public class TopPane extends MenuBar {
                         }).collect(joining(","))
                 ).collect(joining(lineSeparator())));
                 writer.close();
-            } catch (Exception e) {
+            } catch (Exception ex) {
                 alert.setHeaderText(file.getName());
-                alert.setContentText(e.getMessage());
+                alert.setContentText(ex.getMessage());
                 alert.show();
             }
         }
