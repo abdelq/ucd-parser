@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class Model {
-    public final String id;
+    private final String id;
 
     private List<ClassDeclaration> classes = new ArrayList<>();
     private List<Generalization> generalizations = new ArrayList<>();
@@ -28,22 +28,23 @@ public class Model {
         });
     }
 
+    public String getId() {
+        return id;
+    }
+
     public Stream<ClassDeclaration> getClasses() {
         return classes.stream();
     }
-
 
     public Stream<Generalization> getGeneralizations() {
         return generalizations.stream();
     }
 
-
-    public Stream<Association> getAssociations() {
+    Stream<Association> getAssociations() {
         return associations.stream();
     }
 
-
-    public Stream<Aggregation> getAggregations() {
+    Stream<Aggregation> getAggregations() {
         return aggregations.stream();
     }
 }

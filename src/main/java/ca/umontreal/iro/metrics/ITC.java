@@ -1,9 +1,10 @@
 package ca.umontreal.iro.metrics;
 
-import ca.umontreal.iro.App;
 import ca.umontreal.iro.parser.tree.ClassDeclaration;
+import ca.umontreal.iro.parser.tree.Operation;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -11,15 +12,15 @@ import static java.util.stream.Collectors.toList;
 public class ITC implements Metric {
     public long metric;
 
-    public ITC(ClassDeclaration declaration) {
-        List<String> types = App.getModel().getClasses() // XXX App.getModel
+    public ITC(ClassDeclaration declaration, Stream<ClassDeclaration> declarations) {
+        List<String> types = declarations
                 .filter(decl -> decl != declaration)
                 .map(decl -> decl.id)
                 .collect(toList());
         metric = declaration.getOperations().parallelStream()
-                .flatMap(op -> op.arguments.parallelStream().map(arg -> arg.type))
+                .flatMap(Operation::getArgumentsType)
                 .filter(types::contains)
-                .count(); // XXX
+                .count();
     }
 
     public String getDescription() {

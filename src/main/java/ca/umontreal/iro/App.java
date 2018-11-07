@@ -50,7 +50,7 @@ public class App extends Application {
      */
     public static void setModel(Model model) {
         if ((App.model = model) != null) {
-            stage.setTitle(model.id + " - UCD Parser");
+            stage.setTitle(model.getId() + " - UCD Parser");
         } else {
             stage.setTitle("UCD Parser");
         }

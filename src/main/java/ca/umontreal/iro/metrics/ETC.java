@@ -1,22 +1,19 @@
 package ca.umontreal.iro.metrics;
 
-import ca.umontreal.iro.App;
 import ca.umontreal.iro.parser.tree.ClassDeclaration;
+import ca.umontreal.iro.parser.tree.Operation;
 
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 
 public class ETC implements Metric {
     public long metric;
 
-    public ETC(ClassDeclaration declaration) {
-        Stream<ClassDeclaration> otherClasses = App.getModel().getClasses().filter(decl -> decl != declaration);
+    public ETC(ClassDeclaration declaration, Stream<ClassDeclaration> declarations) {
+        Stream<ClassDeclaration> otherClasses = declarations.filter(decl -> decl != declaration);
         Stream<String> arguments = otherClasses.flatMap(decl ->
-                decl.getOperations().parallelStream().flatMap(op ->
-                        op.arguments.parallelStream().map(arg -> arg.type)
-                )
+                decl.getOperations().parallelStream().flatMap(Operation::getArgumentsType)
         );
         metric = arguments.filter(arg -> arg.equals(declaration.id)).count();
     }

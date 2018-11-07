@@ -3,6 +3,7 @@ package ca.umontreal.iro.panes;
 import ca.umontreal.iro.App;
 import ca.umontreal.iro.parser.Parser;
 import ca.umontreal.iro.parser.tree.ClassDeclaration;
+import ca.umontreal.iro.parser.tree.Generalization;
 import ca.umontreal.iro.parser.tree.Model;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -12,6 +13,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.lang.System.lineSeparator;
@@ -94,24 +97,36 @@ public class TopPane extends MenuBar {
         // Generate the hierarchy tree of classes
         List<TreeItem<ClassDeclaration>> treeItems = model.getClasses().map(decl -> decl.treeItem).collect(toList());
 
-        model.getGeneralizations().forEach(gen -> {
+        for (Generalization gen : model.getGeneralizations().collect(toList())) {
+            // TODO Match all children or throw error
             List<TreeItem<ClassDeclaration>> children = treeItems.stream().filter(item ->
-                    gen.subclasses.contains(item.getValue().id)
+                    gen.getSubclasses().contains(item.getValue().id)
             ).collect(toList());
             treeItems.removeIf(children::contains);
 
-            TreeItem<ClassDeclaration> parent = treeItems.stream().filter(item ->
-                    classExists(gen.id, item)
-            ).findAny().get(); // XXX
-            parent.setExpanded(true);
-            parent.getChildren().addAll(children);
-        });
+            Optional<TreeItem<ClassDeclaration>> parent = treeItems.stream().filter(item ->
+                    classExists(gen.getId(), item)
+            ).findAny();
+            if (!parent.isPresent()) {
+                alert.setHeaderText(file.getName());
+                alert.setContentText("Could not find parent class" + gen.getId());
+                alert.show();
+
+                return;
+            }
+
+            parent.get().setExpanded(true);
+            parent.get().getChildren().addAll(children);
+        }
 
         App.setModel(model);
+
         LeftPane.classes.getChildren().setAll(treeItems);
         CenterPane.clear();
         RightPane.clear();
         BottomPane.clear();
+
+        getMenus().get(1).getItems().get(0).setDisable(false); // Enables export of metrics
     }
 
     /**
@@ -122,11 +137,11 @@ public class TopPane extends MenuBar {
      * @return if a class declaration with the identifier exists
      */
     private boolean classExists(String id, TreeItem<ClassDeclaration> item) {
-        if (item.getValue().id.equals(id)) {
+        if (item.getValue().matches(id)) {
             return true;
         }
 
-        return item.getChildren().stream().anyMatch(child -> classExists(id, child));
+        return item.getChildren().parallelStream().anyMatch(child -> classExists(id, child));
     }
 
     /**
@@ -139,6 +154,8 @@ public class TopPane extends MenuBar {
         CenterPane.clear();
         RightPane.clear();
         BottomPane.clear();
+
+        getMenus().get(1).getItems().get(0).setDisable(true); // Disables export of metrics
     }
 
     /**
@@ -149,6 +166,7 @@ public class TopPane extends MenuBar {
     private Menu createMetricsMenu() {
         MenuItem exportItem = new MenuItem("Exporter");
         exportItem.setOnAction(e -> export());
+        exportItem.setDisable(true);
 
         return new Menu("Métriques", null, exportItem);
     }
@@ -168,8 +186,9 @@ public class TopPane extends MenuBar {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
                 writer.write(App.getModel().getClasses().map(decl ->
                         decl.id + "," + decl.getMetrics().stream().map(metric -> {
-                            if (metric.getValue() instanceof Double)
-                                return format("%.2f", metric.getValue()); // XXX
+                            if (metric.getValue() instanceof Double) {
+                                return format("%.2f", metric.getValue().doubleValue());
+                            }
                             return metric.getValue().toString();
                         }).collect(joining(","))
                 ).collect(joining(lineSeparator())));

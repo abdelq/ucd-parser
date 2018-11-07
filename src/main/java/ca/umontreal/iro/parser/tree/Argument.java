@@ -7,6 +7,11 @@ public class Argument extends DataItem {
         super(id, type);
     }
 
+    /**
+     * Formatted string corresponding to the argument in the details section.
+     *
+     * @return detail string for argument
+     */
     String details() {
         return format("%s : %s", id, type);
     }

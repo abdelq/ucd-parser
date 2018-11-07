@@ -11,8 +11,9 @@ public class DIT implements Metric {
     public DIT(ClassDeclaration declaration) {
         TreeItem<ClassDeclaration> item = declaration.treeItem;
         while ((item = item.getParent()) != null) {
-            metric += 1; // XXX Possibly wrong because of the tree root
+            metric += 1;
         }
+        metric -= 1;
     }
 
     public String getDescription() {

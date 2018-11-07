@@ -15,8 +15,8 @@ class ThrowingErrorListener extends BaseErrorListener {
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
-                            int line, int charPositionInLine,
+                            int line, int column,
                             String msg, RecognitionException e) {
-        throw new ParseCancellationException(format("line %d column %d: %s", line, charPositionInLine, msg));
+        throw new ParseCancellationException(format("line %d column %d: %s", line, column, msg));
     }
 }

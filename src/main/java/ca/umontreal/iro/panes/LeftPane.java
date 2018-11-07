@@ -36,7 +36,7 @@ public class LeftPane extends VBox {
     }
 
     /**
-     * Clears classes.
+     * Clears class declarations.
      */
     static void clear() {
         classes.getChildren().clear();

@@ -15,17 +15,17 @@ public class NOD implements Metric {
         metric = numChildren(declaration.treeItem);
     }
 
-    private int numChildren(TreeItem<ClassDeclaration> treeItem) {
-        List<TreeItem<ClassDeclaration>> children = treeItem.getChildren();
-        return children.size() + children.parallelStream().mapToInt(this::numChildren).sum(); // XXX
-    }
-
     public String getDescription() {
         return "Nombre de sous-classes directes et indirectes de la classe.";
     }
 
     public Number getValue() {
         return metric;
+    }
+
+    private int numChildren(TreeItem<ClassDeclaration> treeItem) {
+        List<TreeItem<ClassDeclaration>> children = treeItem.getChildren();
+        return children.size() + children.parallelStream().mapToInt(this::numChildren).sum();
     }
 
     @Override

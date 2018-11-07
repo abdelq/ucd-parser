@@ -7,12 +7,23 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 public class Aggregation implements Declaration {
-    public final Role container;
-    public final List<Role> parts;
+    private final Role container;
+    private final List<Role> parts;
 
     public Aggregation(Role container, Stream<Role> parts) {
         this.container = container;
         this.parts = parts.collect(toList());
+    }
+
+    /**
+     * TODO.
+     *
+     * @param id identifier to compare
+     * @return TODO
+     */
+    boolean matches(String id) {
+        return container.matches(id) ||
+                parts.parallelStream().anyMatch(part -> part.matches(id));
     }
 
     @Override

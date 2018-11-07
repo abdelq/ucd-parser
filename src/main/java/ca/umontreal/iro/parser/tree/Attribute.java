@@ -7,6 +7,11 @@ public class Attribute extends DataItem {
         super(id, type);
     }
 
+    /**
+     * Formatted string corresponding to the attribute in the details section.
+     *
+     * @return detail string for attribute
+     */
     String details() {
         return format("    %s : %s", id, type);
     }

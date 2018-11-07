@@ -10,19 +10,19 @@ import java.util.stream.Stream;
 
 import static java.lang.String.join;
 import static java.lang.System.lineSeparator;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class ClassDeclaration implements Declaration {
-    public final String id;
+    public final String id; // TODO Private
     private final List<Attribute> attributes;
     private final List<Operation> operations;
 
     private List<Association> associations;
     private List<Aggregation> aggregations;
-    private StringBuilder details;
+    private String details;
     private List<Metric> metrics;
-
-    public TreeItem<ClassDeclaration> treeItem;
+    public TreeItem<ClassDeclaration> treeItem; // TODO Private
 
     public ClassDeclaration(String id, Stream<Attribute> attributes, Stream<Operation> operations) {
         this.id = id;
@@ -30,11 +30,6 @@ public class ClassDeclaration implements Declaration {
         this.operations = operations.collect(toList());
 
         this.treeItem = new TreeItem<>(this);
-    }
-
-    @Override
-    public String toString() {
-        return id;
     }
 
     public List<Attribute> getAttributes() {
@@ -47,56 +42,71 @@ public class ClassDeclaration implements Declaration {
 
     public List<Association> getAssociations() {
         if (associations == null) {
-            associations = App.getModel().getAssociations().filter(asso ->
-                    asso.firstRole.id.equals(id) || asso.secondRole.id.equals(id)
-            ).collect(toList());
+            associations = App.getModel().getAssociations().filter(asso -> asso.matches(id)).collect(toList());
         }
         return associations;
     }
 
     public List<Aggregation> getAggregations() {
         if (aggregations == null) {
-            aggregations = App.getModel().getAggregations().filter(aggr ->
-                    aggr.container.id.equals(id) || aggr.parts.stream().anyMatch(part -> part.id.equals(id))
-            ).collect(toList());
+            aggregations = App.getModel().getAggregations().filter(aggr -> aggr.matches(id)).collect(toList());
         }
         return aggregations;
     }
 
     public String getDetails() {
         if (details == null) {
-            details = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
 
-            details.append("CLASS ").append(id).append(lineSeparator());
+            builder.append("CLASS ").append(id).append(lineSeparator());
 
-            details.append("ATTRIBUTES").append(lineSeparator()).append(join(
-                    "," + lineSeparator(),
-                    attributes.stream().map(Attribute::details).collect(toList())
-            ));
+            builder.append("ATTRIBUTES").append(lineSeparator()).append(
+                    attributes.stream().map(Attribute::details)
+                              .collect(joining("," + lineSeparator()))
+            );
             if (attributes.size() > 0) {
-                details.append(lineSeparator());
+                builder.append(lineSeparator());
             }
 
-            details.append("OPERATIONS").append(lineSeparator()).append(join(
-                    "," + lineSeparator(),
-                    operations.stream().map(Operation::details).collect(toList())
-            ));
+            builder.append("OPERATIONS").append(lineSeparator()).append(
+                    operations.stream().map(Operation::details)
+                              .collect(joining("," + lineSeparator()))
+            );
             if (operations.size() > 0) {
-                details.append(lineSeparator());
+                builder.append(lineSeparator());
             }
 
-            details.append(lineSeparator()).append(";");
-        }
+            builder.append(";");
 
-        return details.toString();
+            details = builder.toString();
+        }
+        return details;
     }
 
     public List<Metric> getMetrics() {
         if (metrics == null) {
             metrics = Arrays.asList(new ANA(this), new NOM(this),
-                    new NOA(this), new ITC(this), new ETC(this), new CAC(this),
-                    new DIT(this), new CLD(this), new NOC(this), new NOD(this));
+                    new NOA(this), new ITC(this, App.getModel().getClasses()),
+                    new ETC(this, App.getModel().getClasses()), new CAC(this),
+                    new DIT(this), new CLD(this),
+                    new NOC(this), new NOD(this));
         }
         return metrics;
+    }
+
+
+    /**
+     * TODO.
+     *
+     * @param id identifier to compare
+     * @return TODO
+     */
+    public boolean matches(String id) {
+        return this.id.equals(id);
+    }
+
+    @Override
+    public String toString() {
+        return id;
     }
 }

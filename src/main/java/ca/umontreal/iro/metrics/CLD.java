@@ -4,6 +4,7 @@ import ca.umontreal.iro.parser.tree.ClassDeclaration;
 import javafx.scene.control.TreeItem;
 
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import static java.lang.String.format;
@@ -15,16 +16,6 @@ public class CLD implements Metric {
         metric = maxDepth(declaration.treeItem);
     }
 
-    private int maxDepth(TreeItem<ClassDeclaration> treeItem) {
-        List<TreeItem<ClassDeclaration>> children = treeItem.getChildren();
-        if (children.size() == 0) {
-            return 0;
-        }
-
-        IntStream depths = children.parallelStream().mapToInt(this::maxDepth);
-        return depths.max().getAsInt() + 1; // XXX
-    }
-
     public String getDescription() {
         return "Taille du chemin le plus long reliant la classe à " +
                 "une classe feuille dans le graphe d'héritage.";
@@ -32,6 +23,16 @@ public class CLD implements Metric {
 
     public Number getValue() {
         return metric;
+    }
+
+    private int maxDepth(TreeItem<ClassDeclaration> treeItem) {
+        List<TreeItem<ClassDeclaration>> children = treeItem.getChildren();
+        if (children.size() == 0) {
+            return 0;
+        }
+
+        OptionalInt maxDepth = children.parallelStream().mapToInt(this::maxDepth).max();
+        return 1 + (maxDepth.isPresent() ? maxDepth.getAsInt() : 0);
     }
 
     @Override
