@@ -6,12 +6,12 @@ public interface Metric {
      *
      * @return description of the metric
      */
-    String getDescription();
+    public String getDescription();
 
     /**
      * Calculated value of the metric.
      *
      * @return value of the metric
      */
-    Number getValue();
+    public Number getValue();
 }
